@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useCallback, useState, useMemo } from "react"
+import { useRef, useEffect, useCallback, useState, useMemo, memo } from "react"
 import * as d3 from "d3"
 import {
   ALL_ENTITIES,
@@ -44,121 +44,6 @@ const TYPE_COLORS: Record<string, string> = {
   Inscription: "#a855f7",
 }
 
-// Build graph with ALL entities - temporal filtering via opacity in separate effect
-function buildGraphData(allEntities: SilkRoadEntity[] = ALL_ENTITIES) {
-  const entityMap = new Map(allEntities.map(e => [e.id, e]))
-  const allIds = new Set(allEntities.map((e) => e.id))
-
-  const nodes: GraphNode[] = []
-  const links: GraphLink[] = []
-  const nodeIds = new Set<string>()
-
-  // Add ALL entities as nodes
-  allEntities.forEach((entity) => {
-    if (!nodeIds.has(entity.id)) {
-      nodeIds.add(entity.id)
-      nodes.push({
-        id: entity.id,
-        name: entity.name.split("(")[0].trim(),
-        type: entity.type,
-        importance: entity.importance,
-        startYear: entity.startYear,
-        endYear: entity.endYear,
-      })
-    }
-  })
-
-  // Helper to add a link without duplicates
-  const addedLinks = new Set<string>()
-  const addLink = (sourceId: string, targetId: string) => {
-    if (sourceId === targetId) return
-    if (!allIds.has(sourceId) || !allIds.has(targetId)) return
-    const linkKey = [sourceId, targetId].sort().join('-')
-    if (addedLinks.has(linkKey)) return
-    addedLinks.add(linkKey)
-    links.push({ source: sourceId, target: targetId })
-  }
-
-  // 1. Build links from SILK_ROAD_RELATIONSHIPS (person-to-city, event-to-city, etc.)
-  SILK_ROAD_RELATIONSHIPS.forEach((rel) => {
-    // Skip route references as targets (routes are not entity nodes)
-    if (rel.targetId.startsWith('route-')) return
-    addLink(rel.sourceId, rel.targetId)
-  })
-
-  // 2. Build links from relatedEntities on each entity
-  allEntities.forEach((entity) => {
-    (entity.relatedEntities || []).forEach((relId) => {
-      // Skip route references
-      if (relId.startsWith('route-')) return
-      addLink(entity.id, relId)
-    })
-  })
-
-  // 3. Connect cities that share the same route (creates the network)
-  // This is crucial - cities on the same trade route are inherently connected
-  const cityEntities = allEntities.filter(e => e.type === "City")
-  
-  // Build a map of route -> cities that reference it
-  const routeToCities = new Map<string, string[]>()
-  cityEntities.forEach(city => {
-    (city.relatedEntities || []).forEach(relId => {
-      if (relId.startsWith('route-')) {
-        if (!routeToCities.has(relId)) routeToCities.set(relId, [])
-        routeToCities.get(relId)!.push(city.id)
-      }
-    })
-  })
-
-  // Connect cities on the same route (limited connections to avoid too many edges)
-  routeToCities.forEach((cityIds) => {
-    // Connect each city to its neighbors on the route (max 3 connections per city)
-    for (let i = 0; i < cityIds.length; i++) {
-      for (let j = i + 1; j < Math.min(i + 4, cityIds.length); j++) {
-        addLink(cityIds[i], cityIds[j])
-      }
-    }
-  })
-
-  // 4. Connect goods to cities where they are mentioned (limit connections to avoid excessive edges)
-  const goodEntities = allEntities.filter(e => e.type === "Good")
-  goodEntities.forEach(good => {
-    // Only connect to top 5 cities in the same region to reduce link explosion
-    const citiesInRegion = cityEntities
-      .filter(city => city.region === good.region)
-      .sort((a, b) => {
-        const importanceOrder = { Major: 0, Significant: 1, Moderate: 2, Minor: 3 }
-        return (importanceOrder[a.importance as keyof typeof importanceOrder] || 99) -
-               (importanceOrder[b.importance as keyof typeof importanceOrder] || 99)
-      })
-      .slice(0, 5)
-
-    citiesInRegion.forEach(city => {
-      addLink(good.id, city.id)
-    })
-  })
-
-  // 5. Connect events to their related cities (limit connections)
-  const eventEntities = allEntities.filter(e => e.type === "Event")
-  eventEntities.forEach(event => {
-    (event.relatedEntities || []).forEach(relId => {
-      if (!relId.startsWith('route-')) {
-        addLink(event.id, relId)
-      }
-    })
-    // Also connect to top 3 nearest cities by region to avoid too many edges
-    const citiesInRegion = cityEntities
-      .filter(city => city.region === event.region)
-      .slice(0, 3)
-
-    citiesInRegion.forEach(city => {
-      addLink(event.id, city.id)
-    })
-  })
-
-  return { nodes, links }
-}
-
 export function RelationshipGraph({
   onSelectEntity,
   focusId,
@@ -174,6 +59,121 @@ export function RelationshipGraph({
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [apiEntities, setApiEntities] = useState<SilkRoadEntity[]>(ALL_ENTITIES)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
+
+  // Memoized graph data building function - moved inside component
+  const buildGraphData = useCallback((allEntities: SilkRoadEntity[] = ALL_ENTITIES) => {
+    const entityMap = new Map(allEntities.map(e => [e.id, e]))
+    const allIds = new Set(allEntities.map((e) => e.id))
+
+    const nodes: GraphNode[] = []
+    const links: GraphLink[] = []
+    const nodeIds = new Set<string>()
+
+    // Add ALL entities as nodes
+    allEntities.forEach((entity) => {
+      if (!nodeIds.has(entity.id)) {
+        nodeIds.add(entity.id)
+        nodes.push({
+          id: entity.id,
+          name: entity.name.split("(")[0].trim(),
+          type: entity.type,
+          importance: entity.importance,
+          startYear: entity.startYear,
+          endYear: entity.endYear,
+        })
+      }
+    })
+
+    // Helper to add a link without duplicates
+    const addedLinks = new Set<string>()
+    const addLink = (sourceId: string, targetId: string) => {
+      if (sourceId === targetId) return
+      if (!allIds.has(sourceId) || !allIds.has(targetId)) return
+      const linkKey = [sourceId, targetId].sort().join('-')
+      if (addedLinks.has(linkKey)) return
+      addedLinks.add(linkKey)
+      links.push({ source: sourceId, target: targetId })
+    }
+
+    // 1. Build links from SILK_ROAD_RELATIONSHIPS (person-to-city, event-to-city, etc.)
+    SILK_ROAD_RELATIONSHIPS.forEach((rel) => {
+      // Skip route references as targets (routes are not entity nodes)
+      if (rel.targetId.startsWith('route-')) return
+      addLink(rel.sourceId, rel.targetId)
+    })
+
+    // 2. Build links from relatedEntities on each entity
+    allEntities.forEach((entity) => {
+      (entity.relatedEntities || []).forEach((relId) => {
+        // Skip route references
+        if (relId.startsWith('route-')) return
+        addLink(entity.id, relId)
+      })
+    })
+
+    // 3. Connect cities that share the same route (creates the network)
+    // This is crucial - cities on the same trade route are inherently connected
+    const cityEntities = allEntities.filter(e => e.type === "City")
+
+    // Build a map of route -> cities that reference it
+    const routeToCities = new Map<string, string[]>()
+    cityEntities.forEach(city => {
+      (city.relatedEntities || []).forEach(relId => {
+        if (relId.startsWith('route-')) {
+          if (!routeToCities.has(relId)) routeToCities.set(relId, [])
+          routeToCities.get(relId)!.push(city.id)
+        }
+      })
+    })
+
+    // Connect cities on the same route (limited connections to avoid too many edges)
+    routeToCities.forEach((cityIds) => {
+      // Connect each city to its neighbors on the route (max 3 connections per city)
+      for (let i = 0; i < cityIds.length; i++) {
+        for (let j = i + 1; j < Math.min(i + 4, cityIds.length); j++) {
+          addLink(cityIds[i], cityIds[j])
+        }
+      }
+    })
+
+    // 4. Connect goods to cities where they are mentioned (limit connections to avoid excessive edges)
+    const goodEntities = allEntities.filter(e => e.type === "Good")
+    goodEntities.forEach(good => {
+      // Only connect to top 5 cities in the same region to reduce link explosion
+      const citiesInRegion = cityEntities
+        .filter(city => city.region === good.region)
+        .sort((a, b) => {
+          const importanceOrder = { Major: 0, Significant: 1, Moderate: 2, Minor: 3 }
+          return (importanceOrder[a.importance as keyof typeof importanceOrder] || 99) -
+                 (importanceOrder[b.importance as keyof typeof importanceOrder] || 99)
+        })
+        .slice(0, 5)
+
+      citiesInRegion.forEach(city => {
+        addLink(good.id, city.id)
+      })
+    })
+
+    // 5. Connect events to their related cities (limit connections)
+    const eventEntities = allEntities.filter(e => e.type === "Event")
+    eventEntities.forEach(event => {
+      (event.relatedEntities || []).forEach(relId => {
+        if (!relId.startsWith('route-')) {
+          addLink(event.id, relId)
+        }
+      })
+      // Also connect to top 3 nearest cities by region to avoid too many edges
+      const citiesInRegion = cityEntities
+        .filter(city => city.region === event.region)
+        .slice(0, 3)
+
+      citiesInRegion.forEach(city => {
+        addLink(event.id, city.id)
+      })
+    })
+
+    return { nodes, links }
+  }, []) // Empty dependency - this data building logic doesn't change
 
   /* Try Flask API for entity data, fall back to static */
   useEffect(() => {
@@ -1011,16 +1011,16 @@ export function RelationshipGraph({
   // Separate effect for zooming to focus node - doesn't rebuild the graph
   useEffect(() => {
     if (!svgRef.current || !zoomRef.current || !focusId) return
-    
+
     // Delay to allow simulation to settle nodes into position
     const timeoutId = setTimeout(() => {
       if (!svgRef.current || !zoomRef.current) return
-      
+
       const svg = d3.select(svgRef.current)
       const zoom = zoomRef.current
       const nodes = nodesRef.current
       const { width, height } = dimensions
-      
+
       const focusNode = nodes.find((n) => n.id === focusId)
       if (focusNode && focusNode.x !== undefined && focusNode.y !== undefined) {
         svg
@@ -1033,7 +1033,7 @@ export function RelationshipGraph({
               .scale(1.5)
               .translate(-focusNode.x, -focusNode.y)
           )
-        
+
         // Update visual highlight for focused node
         svg.selectAll<SVGCircleElement, GraphNode>("circle")
           .attr("stroke", (d) =>
@@ -1044,7 +1044,7 @@ export function RelationshipGraph({
           .attr("stroke-width", (d) => (d.id === focusId ? 3 : 1))
       }
     }, 800) // Wait for simulation to settle
-    
+
     return () => clearTimeout(timeoutId)
   }, [focusId, dimensions, isDark])
 
@@ -1063,3 +1063,5 @@ export function RelationshipGraph({
     </div>
   )
 }
+
+export const MemoizedRelationshipGraph = memo(RelationshipGraph)
