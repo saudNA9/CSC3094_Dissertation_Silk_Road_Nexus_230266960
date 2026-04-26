@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Map, GitBranch, Clock, ArrowRight, Globe2, Network, Calendar, Compass, Sun, Moon } from "lucide-react"
+import { Clock, ArrowRight, Globe2, GitBranch, Map, Network, Calendar, Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
+import { TopNav } from "@/components/top-nav"
 
 const CAPABILITIES = [
   {
@@ -16,7 +17,7 @@ const CAPABILITIES = [
   },
   {
     icon: Clock,
-    title: "Temporal Analysis", 
+    title: "Temporal Analysis",
     description:
       "Filter across 1,800 years of history. Watch networks evolve from the Han Dynasty through the Mongol Empire.",
     accent: "#B8860B",
@@ -45,20 +46,20 @@ const TRADED_GOODS = [
 
 // Silk Road traded goods with real images for Artistry section
 const TRADED_GOODS_IMAGES = [
-  { 
-    name: "Persian Carpets", 
+  {
+    name: "Persian Carpets",
     origin: "Persia & Central Asia",
     image: "/images/persian-rug.png",
     description: "Intricate weavings that carried artistic traditions across continents"
   },
-  { 
-    name: "Porcelain", 
+  {
+    name: "Porcelain",
     origin: "China",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-hiuAlJ4rODh0kz4kn2n5Hs2Dhqbawr.png",
     description: "Delicate ceramics prized from Baghdad to Rome"
   },
-  { 
-    name: "Paper & Manuscripts", 
+  {
+    name: "Paper & Manuscripts",
     origin: "Samarkand",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Rf8ZZgzdGGlUN7IA2N20GVoxCOLOME.png",
     description: "Knowledge and writing spreading along the routes"
@@ -97,31 +98,31 @@ function RugCornerMedallion({ position }: { position: "tl" | "tr" | "bl" | "br" 
   const positions = {
     tl: "top-4 left-4",
     tr: "top-4 right-4 scale-x-[-1]",
-    bl: "bottom-4 left-4 scale-y-[-1]", 
+    bl: "bottom-4 left-4 scale-y-[-1]",
     br: "bottom-4 right-4 scale-[-1]",
   }
-  
+
   return (
     <div className={`absolute ${positions[position]} pointer-events-none opacity-40`}>
       <svg width="80" height="80" viewBox="0 0 80 80" className="text-accent">
         {/* Outer octagonal frame */}
-        <path 
-          d="M20 5 L60 5 L75 20 L75 60 L60 75 L20 75 L5 60 L5 20 Z" 
-          fill="none" 
-          stroke="currentColor" 
+        <path
+          d="M20 5 L60 5 L75 20 L75 60 L60 75 L20 75 L5 60 L5 20 Z"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="1"
           opacity="0.5"
         />
         {/* Inner star pattern */}
-        <path 
-          d="M40 15 L45 30 L60 30 L48 40 L53 55 L40 45 L27 55 L32 40 L20 30 L35 30 Z" 
-          fill="currentColor" 
+        <path
+          d="M40 15 L45 30 L60 30 L48 40 L53 55 L40 45 L27 55 L32 40 L20 30 L35 30 Z"
+          fill="currentColor"
           opacity="0.1"
         />
-        <path 
-          d="M40 15 L45 30 L60 30 L48 40 L53 55 L40 45 L27 55 L32 40 L20 30 L35 30 Z" 
-          fill="none" 
-          stroke="currentColor" 
+        <path
+          d="M40 15 L45 30 L60 30 L48 40 L53 55 L40 45 L27 55 L32 40 L20 30 L35 30 Z"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="0.5"
           opacity="0.6"
         />
@@ -136,7 +137,7 @@ function RugCornerMedallion({ position }: { position: "tl" | "tr" | "bl" | "br" 
 // Silk Fabric Texture Pattern
 function SilkTextureOverlay() {
   return (
-    <div 
+    <div
       className="absolute inset-0 opacity-[0.03] pointer-events-none"
       style={{
         backgroundImage: `repeating-linear-gradient(
@@ -198,7 +199,7 @@ function InscriptionBanner({ text }: { text: string }) {
           <path d="M12 10 L18 15 L18 45 L12 50 L6 45 L6 15 Z" fill="currentColor" opacity="0.1" />
         </svg>
       </div>
-      
+
       <div className="border-y border-accent/20 bg-accent/5 px-12 py-3 text-center">
         <span className="text-sm font-medium tracking-[0.2em] text-accent uppercase">{text}</span>
       </div>
@@ -319,37 +320,37 @@ function CaravanSilhouette() {
       <svg viewBox="0 0 1200 100" className="absolute bottom-0 w-full h-full" preserveAspectRatio="xMidYMax slice">
         {/* Ground line */}
         <path d="M0 85 Q300 80, 600 85 Q900 90, 1200 85" fill="none" stroke="currentColor" strokeWidth="1" className="text-accent" />
-        
+
         {/* Camels and traders silhouettes */}
         <g className="text-accent" transform="translate(100, 40)">
           {/* First camel */}
           <path d="M0 40 L5 35 L8 20 L12 15 L15 20 L18 35 L25 38 L30 35 L35 40 L30 45 L5 45 Z" fill="currentColor" />
           <circle cx="10" cy="12" r="3" fill="currentColor" />
         </g>
-        
+
         <g className="text-accent" transform="translate(200, 42)">
           {/* Trader figure */}
           <ellipse cx="5" cy="8" rx="4" ry="5" fill="currentColor" />
           <path d="M2 13 L2 35 M8 13 L8 35 M2 20 L8 20" stroke="currentColor" strokeWidth="2" />
         </g>
-        
+
         <g className="text-accent" transform="translate(280, 38)">
           {/* Second camel with cargo */}
           <path d="M0 40 L5 35 L8 20 L12 15 L15 20 L18 35 L25 38 L30 35 L35 40 L30 45 L5 45 Z" fill="currentColor" />
           <circle cx="10" cy="12" r="3" fill="currentColor" />
           <rect x="15" y="22" width="10" height="8" rx="1" fill="currentColor" />
         </g>
-        
+
         <g className="text-accent" transform="translate(850, 40)">
           <path d="M0 40 L5 35 L8 20 L12 15 L15 20 L18 35 L25 38 L30 35 L35 40 L30 45 L5 45 Z" fill="currentColor" />
           <circle cx="10" cy="12" r="3" fill="currentColor" />
         </g>
-        
+
         <g className="text-accent" transform="translate(950, 42)">
           <ellipse cx="5" cy="8" rx="4" ry="5" fill="currentColor" />
           <path d="M2 13 L2 35 M8 13 L8 35 M2 20 L8 20" stroke="currentColor" strokeWidth="2" />
         </g>
-        
+
         <g className="text-accent" transform="translate(1030, 38)">
           <path d="M0 40 L5 35 L8 20 L12 15 L15 20 L18 35 L25 38 L30 35 L35 40 L30 45 L5 45 Z" fill="currentColor" />
           <circle cx="10" cy="12" r="3" fill="currentColor" />
@@ -363,7 +364,7 @@ function CaravanSilhouette() {
 /* Theme Toggle Button */
 function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  
+
   return (
     <Button
       variant="ghost"
@@ -379,71 +380,32 @@ function ThemeToggle() {
 }
 
 export default function HomePage() {
+  const { theme, setTheme } = useTheme()
+
   return (
     <div className="flex min-h-screen flex-col bg-[#FAF8F5] dark:bg-[#1a1814]">
       {/* Hero Section */}
       <section className="relative flex min-h-screen flex-col overflow-hidden">
         {/* Warm gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#F5F0E8] via-[#FAF8F5] to-[#FFFDF9] dark:from-[#1a1814] dark:via-[#1e1b16] dark:to-[#1a1814]" />
-        
+
         {/* Islamic geometric pattern overlay */}
         <IslamicStarPattern />
-        
+
         {/* Silk texture overlay */}
         <SilkTextureOverlay />
-        
+
         {/* Persian rug corner medallions */}
         <RugCornerMedallion position="tl" />
         <RugCornerMedallion position="tr" />
         <RugCornerMedallion position="bl" />
         <RugCornerMedallion position="br" />
-        
+
         {/* Caravan silhouette at bottom */}
         <CaravanSilhouette />
-        
+
         {/* Top navigation bar */}
-        <nav className="relative z-20 border-b border-accent/10 bg-[#FAF8F5]/80 backdrop-blur-sm dark:bg-[#1a1814]/80">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-                <Link href="/" className="flex items-center">
-                  <Image
-                    src="/images/logo-full.png"
-                    alt="The Silk Roads Nexus - Cultural Heritage Exploration Platform"
-                    width={380}
-                    height={64}
-                    className="h-14 w-auto object-contain"
-                    priority
-                  />
-                </Link>
-            
-            <div className="hidden items-center gap-1 md:flex">
-              <Link href="/explore">
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-accent">
-                  <Map className="h-4 w-4" />
-                  Explore
-                </Button>
-              </Link>
-              <Link href="/graph">
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-accent">
-                  <GitBranch className="h-4 w-4" />
-                  Graph
-                </Button>
-              </Link>
-              <Link href="/traveller">
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-accent">
-                  <Compass className="h-4 w-4" />
-                  Traveller
-                </Button>
-              </Link>
-              <Link href="/architecture">
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-accent">
-                  <Network className="h-4 w-4" />
-                  Architecture
-                </Button>
-              </Link>
-              <ThemeToggle />
-            </div>
-          </div>
-        </nav>
+        <TopNav />
 
         {/* Main hero content */}
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-20">
@@ -458,13 +420,13 @@ export default function HomePage() {
           </div>
 
           <SilkRoadDivider className="my-6" />
-          
+
           {/* Inscription banner */}
           <InscriptionBanner text="Where East Meets West" />
 
           <p className="mt-8 max-w-2xl text-center text-lg leading-relaxed text-muted-foreground">
-            An integrated platform for spatial, temporal, and semantic exploration 
-            of the ancient trade networks that connected civilizations across 
+            An integrated platform for spatial, temporal, and semantic exploration
+            of the ancient trade networks that connected civilizations across
             <span className="font-medium text-foreground"> three continents</span>.
           </p>
 
@@ -523,12 +485,12 @@ export default function HomePage() {
             <h3 className="text-xl font-bold text-foreground">Artistry of the Silk Road</h3>
             <SilkRoadDivider className="mx-auto mt-3" />
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Beyond commerce, the Silk Road carried artistic traditions that transformed cultures. 
-              From Persian carpet weaving to Chinese porcelain and Samarkand papermaking, these crafts 
+              Beyond commerce, the Silk Road carried artistic traditions that transformed cultures.
+              From Persian carpet weaving to Chinese porcelain and Samarkand papermaking, these crafts
               represent centuries of refined skill passed across generations and borders.
             </p>
           </div>
-          
+
           <div className="grid gap-4 md:grid-cols-3">
             {TRADED_GOODS_IMAGES.map((good) => (
               <div
@@ -620,7 +582,7 @@ export default function HomePage() {
               Spanning <span className="font-medium text-foreground">1,800 years</span> from 300 BCE to 1500 CE
             </span>
           </div>
-          
+
           {/* Simple timeline bar */}
           <div className="mt-4 flex items-center gap-2">
             <span className="text-[10px] text-muted-foreground">300 BCE</span>
@@ -645,14 +607,14 @@ export default function HomePage() {
               className="h-12 w-auto object-contain"
             />
           </div>
-          
+
           {/* Project Title */}
           <div className="mb-8 text-center">
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground">
               A Coordinated Multi-View Data-Driven Platform for Integrated Spatial, Temporal, and Semantic Exploration of Silk Roads Cultural Heritage
             </p>
           </div>
-          
+
           <div className="grid gap-8 text-center md:grid-cols-3 md:text-left">
             {/* Project Info */}
             <div>
@@ -662,7 +624,7 @@ export default function HomePage() {
               <p className="text-xs text-muted-foreground">Newcastle University</p>
               <p className="mt-2 text-xs text-muted-foreground">2025-2026 Academic Year</p>
             </div>
-            
+
             {/* Author */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-accent">Developed & Designed by</h4>
@@ -671,7 +633,7 @@ export default function HomePage() {
               <p className="mt-2 text-xs text-muted-foreground">Supervised by</p>
               <p className="text-xs font-medium text-foreground">Dr. Rouaa Yassin Kassab</p>
             </div>
-            
+
             {/* Navigation */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-accent">Navigation</h4>
@@ -683,7 +645,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          
+
           {/* Dataset & Copyright */}
           <div className="mt-8 border-t border-accent/10 pt-6">
             <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
@@ -691,9 +653,9 @@ export default function HomePage() {
                 <p className="text-[10px] font-medium uppercase tracking-wider text-accent/70">Dataset</p>
                 <p className="mt-1 text-[10px] text-muted-foreground">
                   Original dataset created by Saud Najem S. Alnajem, available on Zenodo.{" "}
-                  <a 
-                    href="https://zenodo.org/records/19684922" 
-                    target="_blank" 
+                  <a
+                    href="https://zenodo.org/records/19684922"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-accent underline underline-offset-2 hover:text-accent/80"
                   >

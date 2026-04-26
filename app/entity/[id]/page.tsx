@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TopNav } from "@/components/top-nav"
-import { ALL_ENTITIES, type SilkRoadEntity, type CityRole } from "@/lib/silk-road-data"
+import { ALL_ENTITIES, SILK_ROAD_RELATIONSHIPS, type SilkRoadEntity, type CityRole } from "@/lib/silk-road-data"
 import { TRAVELLERS } from "@/lib/traveller-data"
 import { fetchEntity } from "@/lib/api-client"
 import { getCityImage } from "@/lib/city-images"
@@ -76,7 +76,18 @@ export default function EntityPage({
 
   if (!entity) return notFound()
 
-  const relatedEntities = (entity.relatedEntities || [])
+  // Get relationships from both the entity's relatedEntities field AND the SILK_ROAD_RELATIONSHIPS array
+  const directRelatedIds = entity.relatedEntities || []
+
+  // Find relationships where this entity is source or target
+  const relationshipConnections = SILK_ROAD_RELATIONSHIPS
+    .filter(rel => rel.sourceId === entity.id || rel.targetId === entity.id)
+    .map(rel => rel.sourceId === entity.id ? rel.targetId : rel.sourceId)
+
+  // Combine and deduplicate
+  const allRelatedIds = [...new Set([...directRelatedIds, ...relationshipConnections])]
+
+  const relatedEntities = allRelatedIds
     .map((rid) => ALL_ENTITIES.find((e) => e.id === rid))
     .filter(Boolean) as SilkRoadEntity[]
 
@@ -203,27 +214,27 @@ export default function EntityPage({
           </div>
         </div>
 
-        {/* Two Column Layout - Hero Image Left, Related Info Right */}
+        {/* Hero Image for Cities - Full Width */}
+        {cityImage && (
+          <div className="mb-8 relative aspect-[20/9] overflow-hidden rounded-xl border border-border">
+            <Image
+              src={cityImage.url}
+              alt={cityImage.alt}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <p className="text-xs text-white/80">{cityImage.caption}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Two Column Layout - Content Left, Related Info Right */}
         <div className="grid gap-8 lg:grid-cols-[1fr,320px]">
           {/* LEFT COLUMN - Main Content */}
           <div className="space-y-6">
-            {/* Hero Image for Cities */}
-            {cityImage && (
-              <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-border">
-                <Image
-                  src={cityImage.url}
-                  alt={cityImage.alt}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-xs text-white/80">{cityImage.caption}</p>
-                </div>
-              </div>
-            )}
-
             {/* Tabs */}
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="mb-6 w-full justify-start">
