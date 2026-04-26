@@ -1,0 +1,300 @@
+/*
+ * app/globals.css
+ * Global stylesheet for the Silk Road Nexus platform.
+ * It will:
+ * - Import Tailwind's base reset, component utilities, and utility classes
+ * - Define CSS custom properties (design tokens) for the light and dark color themes
+ * - Map semantic token names (--background, --accent, etc.) to HSL values
+ * - Set the global border radius via --radius
+ * - Apply base element styles (body background, link colors, scrollbar styling)
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 36 25% 94%;
+    --foreground: 222 47% 11%;
+    --card: 38 20% 97%;
+    --card-foreground: 222 47% 11%;
+    --popover: 38 20% 97%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 222 47% 18%;
+    --primary-foreground: 40 30% 95%;
+    --secondary: 36 14% 89%;
+    --secondary-foreground: 222 47% 18%;
+    --muted: 36 14% 91%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 40 55% 50%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 18% 82%;
+    --input: 36 18% 82%;
+    --ring: 40 55% 50%;
+    --chart-1: 40 55% 50%;
+    --chart-2: 222 47% 18%;
+    --chart-3: 220 9% 46%;
+    --chart-4: 40 30% 75%;
+    --chart-5: 222 30% 30%;
+    --radius: 0.5rem;
+    --gold: 40 55% 50%;
+    --gold-light: 40 45% 70%;
+    --gold-dark: 40 60% 38%;
+    --sand: 36 30% 85%;
+    --sand-light: 36 25% 94%;
+    --indigo: 222 47% 18%;
+    --indigo-light: 222 30% 40%;
+    --sidebar-background: 38 20% 97%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 18%;
+    --sidebar-primary-foreground: 40 30% 95%;
+    --sidebar-accent: 36 14% 91%;
+    --sidebar-accent-foreground: 222 47% 18%;
+    --sidebar-border: 36 18% 82%;
+    --sidebar-ring: 40 55% 50%;
+  }
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 36 20% 92%;
+    --card: 222 40% 11%;
+    --card-foreground: 36 20% 92%;
+    --popover: 222 40% 11%;
+    --popover-foreground: 36 20% 92%;
+    --primary: 40 55% 50%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 222 30% 16%;
+    --secondary-foreground: 36 20% 92%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 36 15% 55%;
+    --accent: 40 55% 50%;
+    --accent-foreground: 222 47% 7%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 40 55% 50%;
+    --chart-1: 40 55% 50%;
+    --chart-2: 220 60% 60%;
+    --chart-3: 40 30% 75%;
+    --chart-4: 222 30% 40%;
+    --chart-5: 220 20% 70%;
+    --gold: 40 55% 50%;
+    --gold-light: 40 45% 65%;
+    --gold-dark: 40 60% 38%;
+    --sand: 36 15% 25%;
+    --sand-light: 36 10% 18%;
+    --indigo: 222 47% 18%;
+    --indigo-light: 222 30% 45%;
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 36 20% 92%;
+    --sidebar-primary: 40 55% 50%;
+    --sidebar-primary-foreground: 222 47% 7%;
+    --sidebar-accent: 222 30% 14%;
+    --sidebar-accent-foreground: 36 20% 92%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 40 55% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ── Mapbox overrides ── */
+.mapboxgl-popup-content {
+  @apply rounded-lg border border-border bg-card p-3 text-card-foreground shadow-lg;
+}
+.mapboxgl-popup-tip {
+  border-top-color: hsl(var(--card)) !important;
+}
+
+/* ── Silk Road heritage animations ── */
+
+/* Pulsing gold marker on first load */
+@keyframes marker-pulse {
+  0% { box-shadow: 0 0 0 0 hsla(var(--gold), 0.55); }
+  70% { box-shadow: 0 0 0 12px hsla(var(--gold), 0); }
+  100% { box-shadow: 0 0 0 0 hsla(var(--gold), 0); }
+}
+.silk-marker-pulse {
+  animation: marker-pulse 2s ease-out 1;
+}
+
+/* Subtle glow for selected markers */
+@keyframes marker-glow {
+  0%, 100% { box-shadow: 0 0 8px 2px hsla(var(--gold), 0.4); }
+  50% { box-shadow: 0 0 16px 4px hsla(var(--gold), 0.6); }
+}
+.silk-marker-selected {
+  animation: marker-glow 2.5s ease-in-out infinite;
+}
+
+/* Flowing silk route animation (dash offset) */
+@keyframes silk-flow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -40; }
+}
+
+/* Vignette overlay for map edges */
+.silk-vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, hsla(var(--background), 0.45) 100%);
+  z-index: 1;
+}
+
+/* Ornamental border accent */
+.ornamental-border {
+  position: relative;
+}
+.ornamental-border::before,
+.ornamental-border::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--gold)) 20%,
+    hsl(var(--gold)) 80%,
+    transparent 100%
+  );
+  opacity: 0.35;
+}
+.ornamental-border::before { top: 0; }
+.ornamental-border::after { bottom: 0; }
+
+/* Gold corner accents for panels */
+.gold-corners {
+  position: relative;
+}
+.gold-corners::before,
+.gold-corners::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: hsl(var(--gold));
+  opacity: 0.4;
+}
+.gold-corners::before {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.gold-corners::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Parchment-like subtle texture */
+.parchment-bg {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, hsla(var(--gold), 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, hsla(var(--gold), 0.03) 0%, transparent 50%);
+}
+
+/* Heritage section divider */
+.heritage-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.heritage-divider::before,
+.heritage-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--gold)),
+    transparent
+  );
+  opacity: 0.3;
+}
+
+/* Scrollbar styling for heritage feel */
+.silk-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.silk-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.silk-scrollbar::-webkit-scrollbar-thumb {
+  background: hsla(var(--gold), 0.25);
+  border-radius: 3px;
+}
+.silk-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsla(var(--gold), 0.4);
+}
+
+/* Badge shimmer for entity type icons */
+@keyframes badge-shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+.badge-heritage {
+  background-size: 200% 100%;
+  animation: badge-shimmer 3s ease-in-out infinite;
+}
+
+/* ── 3D City Marker Styles ── */
+@keyframes city-glow {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.7; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes city-entrance {
+  0% { opacity: 0; transform: rotateX(25deg) scale(0.5) translateY(10px); }
+  100% { opacity: 1; transform: rotateX(25deg) scale(1) translateY(0); }
+}
+
+.city-3d-marker {
+  animation: city-entrance 0.6s ease-out forwards;
+}
+
+.city-3d-marker:hover {
+  transform: rotateX(25deg) scale(1.15) !important;
+}
+
+.city-3d-wrapper {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.city-3d-wrapper:hover {
+  filter: brightness(1.1);
+}
+
+.city-3d-wrapper.selected {
+  filter: brightness(1.15) drop-shadow(0 0 12px hsla(var(--gold), 0.7));
+  z-index: 50 !important;
+}
+
+.city-3d-wrapper.selected .city-dot {
+  background: #C6A75E !important;
+  border: 2px solid !important;
+  border-color: rgba(255,255,255,0.8) !important;
+  box-shadow: 0 0 18px rgba(198,167,94,0.6) !important;
+  animation: marker-glow 2.5s ease-in-out infinite;
+}
