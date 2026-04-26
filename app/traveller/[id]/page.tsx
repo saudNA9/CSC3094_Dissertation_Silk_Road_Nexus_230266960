@@ -22,8 +22,10 @@ import {
   Package,
   Calendar,
   Quote,
+  X,
+  Trophy,
 } from "lucide-react"
-import { getTravellerById, type Traveller, type JourneyStop, type TravellerInsight } from "@/lib/traveller-data"
+import { getTravellerById, type Traveller, type JourneyStop, type TravellerInsight, TRAVELLERS } from "@/lib/traveller-data"
 import { TopNav } from "@/components/top-nav"
 import { Button } from "@/components/ui/button"
 
@@ -56,7 +58,7 @@ function GeometricPattern() {
   return (
     <svg className="absolute inset-0 h-full w-full opacity-[0.03]" viewBox="0 0 100 100">
       <pattern id="journey-pattern" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
-        <path d="M12.5 0 L15 5 L20 5 L16 8 L17.5 13 L12.5 10 L7.5 13 L9 8 L5 5 L10 5 Z" 
+        <path d="M12.5 0 L15 5 L20 5 L16 8 L17.5 13 L12.5 10 L7.5 13 L9 8 L5 5 L10 5 Z"
           fill="none" stroke="currentColor" strokeWidth="0.5" className="text-accent" />
       </pattern>
       <rect width="100%" height="100%" fill="url(#journey-pattern)" />
@@ -75,18 +77,18 @@ function JourneyProgressBar({
   onSelectStop: (index: number) => void
 }) {
   const progress = ((currentIndex + 1) / stops.length) * 100
-  
+
   return (
     <div className="sticky top-14 z-40 border-b border-border bg-card/95 backdrop-blur-md">
       <div className="mx-auto max-w-6xl px-6 py-4">
         {/* Progress bar */}
         <div className="relative mb-4 h-1 overflow-hidden rounded-full bg-muted">
-          <div 
+          <div
             className="absolute left-0 top-0 h-full bg-accent transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        
+
         {/* Stop indicators */}
         <div className="flex items-center justify-between gap-1">
           {stops.map((stop, idx) => {
@@ -114,7 +116,7 @@ function JourneyProgressBar({
             )
           })}
         </div>
-        
+
         {/* Current stop info */}
         <div className="mt-3 flex items-center justify-between text-xs">
           <span className="font-medium text-accent">
@@ -149,7 +151,7 @@ function JourneyStepCard({
       {index > 0 && (
         <div className="absolute left-6 top-0 h-8 w-px -translate-y-full bg-gradient-to-b from-transparent to-accent/30" />
       )}
-      
+
       <div
         className={`rounded-xl border bg-card transition-all duration-300 ${
           isExpanded ? "border-accent/30 shadow-lg shadow-accent/5" : "border-border hover:border-accent/20"
@@ -164,7 +166,7 @@ function JourneyStepCard({
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-accent/10 text-lg font-bold text-accent">
             {index + 1}
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-bold text-foreground">{stop.cityName}</h3>
@@ -173,7 +175,7 @@ function JourneyStepCard({
               </span>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">{stop.region}</p>
-            
+
             {/* Duration badge */}
             <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -186,12 +188,12 @@ function JourneyStepCard({
               </span>
             </div>
           </div>
-          
+
           <div className="text-muted-foreground">
             {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </div>
         </button>
-        
+
         {/* Expanded content */}
         {isExpanded && (
           <div className="border-t border-border px-6 pb-6 pt-4">
@@ -200,10 +202,10 @@ function JourneyStepCard({
               <Quote className="mb-2 h-5 w-5 text-accent/50" />
               <p className="italic text-foreground/80">{stop.narrative}</p>
             </div>
-            
+
             {/* Historical context */}
             <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{stop.historicalContext}</p>
-            
+
             {/* Related entities grid */}
             <div className="grid gap-4 sm:grid-cols-3">
               {/* Events */}
@@ -220,7 +222,7 @@ function JourneyStepCard({
                   </ul>
                 </div>
               )}
-              
+
               {/* Goods */}
               {stop.goodsTraded && stop.goodsTraded.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/30 p-3">
@@ -237,7 +239,7 @@ function JourneyStepCard({
                   </div>
                 </div>
               )}
-              
+
               {/* People */}
               {stop.peopleEncountered && stop.peopleEncountered.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/30 p-3">
@@ -253,7 +255,7 @@ function JourneyStepCard({
                 </div>
               )}
             </div>
-            
+
             {/* Cross-view links */}
             <div className="mt-6 flex gap-2">
               <Link href={`/explore?city=${encodeURIComponent(stop.cityName)}`}>
@@ -279,7 +281,7 @@ function JourneyStepCard({
 /* Insight card */
 function InsightCard({ insight }: { insight: TravellerInsight }) {
   const Icon = INSIGHT_ICONS[insight.icon as keyof typeof INSIGHT_ICONS] || Scroll
-  
+
   return (
     <div className="rounded-xl border border-border bg-card p-5 transition-all hover:border-accent/30 hover:shadow-md">
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/10">
@@ -291,13 +293,154 @@ function InsightCard({ insight }: { insight: TravellerInsight }) {
   )
 }
 
+/* Journey Completion Modal Component */
+function JourneyCompletionModal({ traveller, onClose }: { traveller: Traveller; onClose: () => void }) {
+  const router = useRouter()
+
+  // Get other travellers dynamically from the TRAVELLERS array
+  const relatedTravellers = TRAVELLERS
+    .filter(t => t.id !== traveller.id)
+    .slice(0, 2)
+    .map(t => ({
+      id: t.id,
+      name: t.name,
+      journey: `${t.origin} to ${t.destination}`,
+      overlap: t.totalDuration,
+    }))
+
+  const suggestedCities = traveller.stops.slice(0, 3).map(stop => ({
+    name: stop.cityName,
+    region: stop.region,
+  }))
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-accent/30 bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-accent transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Completion Content */}
+          <div className="space-y-8 p-8">
+            {/* Celebration header */}
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <Trophy className="h-16 w-16 text-accent animate-bounce" />
+              </div>
+
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-accent via-accent/80 to-accent/60 bg-clip-text text-transparent">
+                Journey Complete!
+              </h2>
+
+              <p className="text-lg text-muted-foreground">
+                You&apos;ve followed {traveller.name} across {traveller.stops.length} extraordinary stops through history.
+              </p>
+            </div>
+
+            {/* Journey Summary */}
+            <div className="grid grid-cols-3 gap-4 rounded-lg border border-border bg-muted/50 p-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">{traveller.totalDistance}</div>
+                <div className="text-xs text-muted-foreground">Distance Traveled</div>
+              </div>
+              <div className="text-center border-x border-border">
+                <div className="text-2xl font-bold text-accent">{traveller.totalDuration}</div>
+                <div className="text-xs text-muted-foreground">Years of Journey</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">{traveller.stops.length}</div>
+                <div className="text-xs text-muted-foreground">Stops Explored</div>
+              </div>
+            </div>
+
+            {/* What You Discovered */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-accent">What You Discovered</h3>
+              <div className="grid gap-2">
+                {suggestedCities.map((city) => (
+                  <div key={city.name} className="flex items-center gap-2 text-sm rounded-lg border border-border/50 bg-background/50 p-3">
+                    <MapPin className="h-4 w-4 text-accent/60 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-foreground">{city.name}</div>
+                      <div className="text-xs text-muted-foreground">{city.region}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Related Explorations */}
+            <div className="space-y-3 border-t border-border pt-6">
+              <h3 className="font-semibold text-accent">Keep Exploring</h3>
+              <p className="text-sm text-muted-foreground">Challenge yourself with another traveller&apos;s journey:</p>
+
+              <div className="space-y-2">
+                {relatedTravellers.map((related) => (
+                  <button
+                    key={related.id}
+                    onClick={() => {
+                      onClose()
+                      router.push(`/traveller/${related.id}`)
+                    }}
+                    className="w-full text-left rounded-lg border border-border/50 bg-background/50 hover:bg-accent/10 hover:border-accent/50 transition-colors p-3 group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-foreground group-hover:text-accent transition-colors">{related.name}</div>
+                        <div className="text-xs text-muted-foreground">{related.journey}</div>
+                        <div className="text-xs text-accent/60">{related.overlap}</div>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 pt-4 border-t border-border">
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="flex-1"
+              >
+                Continue Exploring
+              </Button>
+              <Button
+                onClick={() => router.push("/traveller")}
+                className="flex-1 bg-accent hover:bg-accent/90 text-foreground"
+              >
+                Browse All Travelers
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 export default function JourneyPage() {
   const params = useParams()
   const router = useRouter()
   const [traveller, setTraveller] = useState<Traveller | null>(null)
   const [currentStopIndex, setCurrentStopIndex] = useState(0)
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set([0]))
-  
+  const [showCompletion, setShowCompletion] = useState(false)
+  const [hasViewedCompletion, setHasViewedCompletion] = useState(false)
+
   useEffect(() => {
     const id = params.id as string
     const found = getTravellerById(id)
@@ -307,7 +450,18 @@ export default function JourneyPage() {
       router.push("/traveller")
     }
   }, [params.id, router])
-  
+
+  // Show completion modal when user reaches the final stop
+  useEffect(() => {
+    if (traveller && currentStopIndex === traveller.stops.length - 1 && !hasViewedCompletion) {
+      const timer = setTimeout(() => {
+        setShowCompletion(true)
+        setHasViewedCompletion(true)
+      }, 800) // Delay slightly for dramatic effect
+      return () => clearTimeout(timer)
+    }
+  }, [currentStopIndex, traveller, hasViewedCompletion])
+
   if (!traveller) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -315,7 +469,7 @@ export default function JourneyPage() {
       </div>
     )
   }
-  
+
   const toggleStop = (index: number) => {
     setExpandedStops((prev) => {
       const next = new Set(prev)
@@ -328,7 +482,7 @@ export default function JourneyPage() {
     })
     setCurrentStopIndex(index)
   }
-  
+
   const goToStop = (index: number) => {
     setCurrentStopIndex(index)
     setExpandedStops((prev) => new Set([...prev, index]))
@@ -336,16 +490,24 @@ export default function JourneyPage() {
     const element = document.getElementById(`stop-${index}`)
     element?.scrollIntoView({ behavior: "smooth", block: "center" })
   }
-  
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Journey Completion Modal */}
+      {showCompletion && (
+        <JourneyCompletionModal
+          traveller={traveller}
+          onClose={() => setShowCompletion(false)}
+        />
+      )}
+
       <TopNav />
-      
-      {/* Hero section with traveller portrait */}
+
+      {/* Hero section with traveller portrait - FULL WIDTH */}
       <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-card to-background">
         <GeometricPattern />
-        
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16">
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-12">
           <Link
             href="/traveller"
             className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent"
@@ -353,14 +515,15 @@ export default function JourneyPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Travellers
           </Link>
-          
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            {/* Circular Portrait */}
-            <div className="relative mx-auto lg:mx-0">
+
+          {/* Centered portrait section */}
+          <div className="flex flex-col items-center gap-12">
+            {/* Circular Portrait - CENTERED */}
+            <div className="relative mx-auto flex justify-center">
               {/* Outer decorative ring */}
               <div className="absolute -inset-4 rounded-full border-2 border-accent/20" />
               <div className="absolute -inset-2 rounded-full border border-accent/10" />
-              
+
               {/* Circular portrait */}
               <div className="relative h-64 w-64 overflow-hidden rounded-full border-4 border-accent/30 shadow-2xl shadow-accent/20 sm:h-80 sm:w-80">
                 <Image
@@ -371,16 +534,16 @@ export default function JourneyPage() {
                   priority
                 />
               </div>
-              
+
               {/* Decorative corner elements */}
               <div className="absolute -left-8 top-1/2 h-16 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-accent/40 to-transparent" />
               <div className="absolute -right-8 top-1/2 h-16 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-accent/40 to-transparent" />
               <div className="absolute left-1/2 -top-8 h-px w-16 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
               <div className="absolute left-1/2 -bottom-8 h-px w-16 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
             </div>
-            
-            {/* Info */}
-            <div>
+
+            {/* Info - CENTERED BELOW PORTRAIT */}
+            <div className="max-w-2xl text-center">
               <span className="mb-3 inline-block rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
                 {traveller.period}
               </span>
