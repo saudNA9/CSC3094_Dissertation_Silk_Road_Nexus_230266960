@@ -43,6 +43,8 @@ import {
   ROUTES,
   EVENTS,
   GOODS,
+  PERSONS,
+  INSCRIPTIONS,
 } from "@/lib/silk-road-data"
 
 // Graph mode definitions with descriptions
@@ -208,40 +210,54 @@ function LeftPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {/* Stats Grid */}
-        <div className="mb-6 grid grid-cols-2 gap-3">
+        {/* Dataset Overview Section */}
+        <div className="mb-3 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          Dataset Overview
+        </div>
+
+        {/* Stats Grid - WITH TOOLTIPS */}
+        <div className="mb-6 grid grid-cols-3 gap-2">
           {[
-            { icon: "o", value: CITIES.length, label: "Cities", color: COLORS.city },
-            { icon: "=", value: ROUTES.length, label: "Routes", color: COLORS.route },
-            { icon: "[]", value: GOODS.length, label: "Goods", color: COLORS.good },
-            { icon: "o", value: EVENTS.length, label: "Events", color: COLORS.event },
+            { icon: "o", value: CITIES.length, label: "Cities", color: COLORS.city, tooltip: "Trade hubs and settlements on the Silk Road" },
+            { icon: "=", value: ROUTES.length, label: "Routes", color: COLORS.route, tooltip: "Trade routes connecting cities" },
+            { icon: "[]", value: GOODS.length, label: "Goods", color: COLORS.good, tooltip: "Commodities traded (silk, spices, etc.)" },
+            { icon: "o", value: EVENTS.length, label: "Events", color: COLORS.event, tooltip: "Historical events and milestones" },
+            { icon: "o", value: PERSONS.length, label: "Persons", color: COLORS.person, tooltip: "Historical figures and merchants" },
+            { icon: "o", value: INSCRIPTIONS.length, label: "Inscriptions", color: COLORS.inscription, tooltip: "Historical texts and inscriptions" },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 p-3"
+              className="group relative flex cursor-help flex-col items-center gap-1 rounded-lg border border-border bg-muted/30 p-2 transition-colors hover:bg-muted/50"
+              title={stat.tooltip}
             >
               <span className="text-lg" style={{ color: stat.color }}>
                 {stat.icon === "o" ? "◉" : stat.icon === "=" ? "≡" : "▢"}
               </span>
-              <div>
-                <div className="text-xl font-bold text-foreground">{stat.value}</div>
-                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-foreground">{stat.value}</div>
+                <div className="text-[9px] text-muted-foreground">{stat.label}</div>
+              </div>
+              <div className="invisible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded bg-black/80 px-2 py-1 text-white text-[8px] whitespace-nowrap group-hover:visible z-10">
+                {stat.tooltip}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Regional Distribution */}
+        {/* Regional Distribution - NOW CLEARLY FOR CITIES */}
         <div className="mb-6 rounded-lg border border-border bg-muted/20 p-3">
-          <h3 className="mb-3 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Regional Distribution
+          <h3 className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Cities by Region
           </h3>
+          <p className="mb-3 text-[8px] text-muted-foreground italic">
+            Distribution of cities across geographic regions (West to East)
+          </p>
           <div className="space-y-2.5">
             {regionalData.map((region) => (
               <div key={region.name} className="flex items-center justify-between">
                 <span className="text-xs text-foreground">{region.name}</span>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
+                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted group/bar relative">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
@@ -249,17 +265,18 @@ function LeftPanel({
                         backgroundColor: region.color,
                       }}
                     />
+                    <div className="invisible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 rounded bg-black/80 px-1.5 py-0.5 text-white text-[8px] whitespace-nowrap group-hover/bar:visible z-10">
+                      {region.count} cities
+                    </div>
                   </div>
-                  <span className="w-4 text-right text-xs font-medium text-muted-foreground">
-                    {region.count}
-                  </span>
+                  <span className="w-6 text-right text-xs font-semibold text-foreground">{region.count}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Temporal Filter / Timeline */}
+        {/* Temporal Filter / Timeline - AT THE BOTTOM */}
         <div className="rounded-lg border border-border bg-muted/20 p-3">
           <h3 className="mb-2 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
             Timeline

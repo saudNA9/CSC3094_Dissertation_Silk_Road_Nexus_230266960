@@ -208,6 +208,11 @@ export function RelationshipGraph({
     }
   }, [])
 
+  /* Sync focusId to hoveredNode so link highlighting works on click */
+  useEffect(() => {
+    setHoveredNode(focusId || null)
+  }, [focusId])
+
   // Use ref to store click handler to avoid triggering graph rebuild when callback changes
   const onSelectEntityRef = useRef(onSelectEntity)
   const apiEntitiesRef = useRef(apiEntities)
@@ -237,7 +242,11 @@ export function RelationshipGraph({
 
   const zoom = d3
   .zoom<SVGSVGElement, unknown>()
-  .scaleExtent(mode === "temporal" ? [1, 1] : [0.3, 5])
+  .scaleExtent(mode === "temporal" ? [1, 1] : [0.7, 5])
+  .translateExtent([
+    [-width * 0.5, -height * 0.5],  // Top-left limit: allow 50% overpan in each direction
+    [width * 1.5, height * 1.5]      // Bottom-right limit
+  ])
   .filter((event) => {
     // Allow all zoom events (wheel, dblclick, touch) unless in temporal mode
     if (mode === "temporal") return false
@@ -262,7 +271,7 @@ export function RelationshipGraph({
       event.preventDefault()
       const currentTransform = d3.zoomTransform(this)
       const direction = event.deltaY < 0 ? 1.1 : 0.9
-      const newK = Math.max(0.3, Math.min(5, currentTransform.k * direction))
+      const newK = Math.max(0.7, Math.min(5, currentTransform.k * direction))
       const newTransform = currentTransform.scale(newK / currentTransform.k)
       svg.call(zoom.transform, newTransform)
     })
@@ -472,8 +481,10 @@ export function RelationshipGraph({
 
       simulation
         .force("link", null)
-        .force("charge", d3.forceManyBody().strength(-30))
-        .force("collision", d3.forceCollide().radius(35))
+        .force("charge", null)
+        .force("collision", null)
+        .force("x", null)
+        .force("y", null)
 
     } else if (mode === "commodity") {
       // Trade flow - goods on left, cities on right, connections between
@@ -867,7 +878,10 @@ export function RelationshipGraph({
           })
       })
       .on("mouseleave", function (d: any) {
-        setHoveredNode(null)
+        // Only clear hoveredNode if there's no focused entity (focusId)
+        if (!focusId) {
+          setHoveredNode(null)
+        }
 
         // Hide label on leave if not in persistent show list (temporal mode)
         if (mode === "temporal") {
