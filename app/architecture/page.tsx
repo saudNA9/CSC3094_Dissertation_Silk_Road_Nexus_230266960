@@ -109,19 +109,19 @@ const TECH_STACK = [
 
 const EVALUATION_AREAS = [
   {
-    title: "Usability",
+    title: "Usability (SUS)",
     description:
       "System Usability Scale (SUS) evaluation, task completion rates, and time-on-task metrics across representative user scenarios.",
   },
   {
-    title: "Engagement",
+    title: "Think Aloud",
     description:
-      "Session duration, entity interactions per session, filter usage patterns, and cross-view navigation frequency.",
+      "Concurrent verbalization protocol capturing users' cognitive processes, navigation strategies, and comprehension challenges during exploration tasks.",
   },
   {
-    title: "Information Discovery",
+    title: "Engagement & Discovery",
     description:
-      "How effectively users discover relationships between entities through spatial, temporal, and semantic exploration pathways.",
+      "Session duration, entity interactions, filter usage patterns, and how effectively users discover relationships through spatial, temporal, and semantic exploration pathways.",
   },
 ]
 
@@ -194,6 +194,27 @@ export default function ArchitecturePage() {
                   View on Zenodo (DOI)
                 </a>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Attribution & Data Sources */}
+        <section className="mb-16">
+          <h2 className="mb-6 text-lg font-semibold text-foreground">
+            Data Sources & Attribution
+          </h2>
+          <div className="space-y-4 rounded-xl border border-border/50 bg-card p-6 lg:p-8">
+            <div>
+              <h3 className="mb-2 font-medium text-foreground">Historical Images</h3>
+              <p className="text-sm text-muted-foreground">
+                All historical portraits, artifacts, and visual content used in this platform are sourced from <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Wikimedia Commons</a> and are available under free and open licenses (CC0, CC-BY, or similar). These images are in the public domain or freely licensed for educational and non-commercial use.
+              </p>
+            </div>
+            <div className="border-t border-border pt-4">
+              <h3 className="mb-2 font-medium text-foreground">Silk Road Data</h3>
+              <p className="text-sm text-muted-foreground">
+                Historical information, routes, cities, and cultural data are derived from academic sources and publicly available historical records. This dataset was curated for educational purposes as part of CSC3094 Software Engineering dissertation research.
+              </p>
             </div>
           </div>
         </section>

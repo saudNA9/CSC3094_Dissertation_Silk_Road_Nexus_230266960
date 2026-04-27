@@ -267,47 +267,59 @@ export const CITY_ARCHITECTURES: CityArchitecture[] = [
     ],
   },
 
-  // 11. Bukhara - Madrasa with tall minaret
-  {
-    id: "bukhara",
-    name: "Bukhara",
-    baseScale: 3.0,
-    style: "central-asian",
-    groundColor: SANDSTONE,
-    buildings: [
-      // Madrasa facade
-      { type: "iwan", width: 16, height: 22, offsetX: 0, color: TILE_BLUE },
-      // Side wings
-      { type: "fortress", width: 14, height: 14, offsetX: -14, color: SANDSTONE },
-      { type: "fortress", width: 14, height: 14, offsetX: 14, color: SANDSTONE },
-      // Domes on wings
-      { type: "dome", width: 8, height: 7, offsetX: -14, offsetY: 14, color: TILE_TURQUOISE },
-      { type: "dome", width: 8, height: 7, offsetX: 14, offsetY: 14, color: TILE_TURQUOISE },
-      // Kalyan minaret (signature)
-      { type: "minaret", width: 5, height: 30, offsetX: 22, color: SANDSTONE_LIGHT },
-    ],
-  },
+  // 11. Bukhara - Kalyan Minaret + sandy madrasa complex
+{
+  id: "bukhara",
+  name: "Bukhara",
+  baseScale: 3.1,
+  style: "central-asian",
+  groundColor: SANDSTONE,
+  buildings: [
+    // Dominant Kalyan minaret - main identity
+    { type: "minaret", width: 7, height: 38, offsetX: -18, color: SANDSTONE_LIGHT },
 
-  // 12. Samarkand - Registan with monumental iwans
-  {
-    id: "samarkand",
-    name: "Samarkand",
-    baseScale: 3.0,
-    style: "central-asian",
-    groundColor: SANDSTONE,
-    buildings: [
-      // Central iwan (Registan style)
-      { type: "iwan", width: 18, height: 24, offsetX: 0, color: TILE_BLUE },
-      // Large dome behind
-      { type: "dome", width: 18, height: 16, offsetX: 0, offsetY: 8, offsetZ: -10, color: TILE_TURQUOISE },
-      // Side minarets
-      { type: "minaret", width: 4, height: 26, offsetX: -14, color: SANDSTONE },
-      { type: "minaret", width: 4, height: 26, offsetX: 14, color: SANDSTONE },
-      // Flanking buildings
-      { type: "fortress", width: 12, height: 12, offsetX: -22, color: SANDSTONE },
-      { type: "fortress", width: 12, height: 12, offsetX: 22, color: SANDSTONE },
-    ],
-  },
+    // Main madrasa/iwan, smaller than Samarkand
+    { type: "iwan", width: 15, height: 20, offsetX: 6, color: SANDSTONE },
+
+    // Blue tile frame only, not full blue building
+    { type: "iwan", width: 10, height: 16, offsetX: 6, offsetY: 3, color: TILE_BLUE },
+
+    // Low mosque/madrasa wings
+    { type: "fortress", width: 18, height: 11, offsetX: -2, color: SANDSTONE },
+    { type: "fortress", width: 14, height: 10, offsetX: 20, color: SANDSTONE_LIGHT },
+
+    // Bukhara dome: lower, sandy/turquoise, not huge
+    { type: "dome", width: 12, height: 9, offsetX: 20, offsetY: 10, color: TILE_TURQUOISE },
+  ],
+},
+
+// 12. Samarkand - Registan monumental triple madrasa
+{
+  id: "samarkand",
+  name: "Samarkand",
+  baseScale: 3.3,
+  style: "central-asian",
+  groundColor: SANDSTONE,
+  buildings: [
+    // Central monumental Registan iwan
+    { type: "iwan", width: 22, height: 28, offsetX: 0, color: TILE_BLUE },
+
+    // Two side iwans to show Registan square identity
+    { type: "iwan", width: 15, height: 22, offsetX: -24, color: TILE_TURQUOISE },
+    { type: "iwan", width: 15, height: 22, offsetX: 24, color: TILE_TURQUOISE },
+
+    // Tall symmetrical minarets
+    { type: "minaret", width: 5, height: 30, offsetX: -34, color: SANDSTONE },
+    { type: "minaret", width: 5, height: 30, offsetX: 34, color: SANDSTONE },
+
+    // Big dome behind the central madrasa
+    { type: "dome", width: 20, height: 17, offsetX: 0, offsetY: 12, offsetZ: -10, color: TILE_TURQUOISE },
+
+    // Long base wings for monumental square feel
+    { type: "fortress", width: 18, height: 12, offsetX: -15, color: SANDSTONE },
+    { type: "fortress", width: 18, height: 12, offsetX: 15, color: SANDSTONE },
+  ],
+},
 
   // 13. Kashgar - Fortified oasis city
   {

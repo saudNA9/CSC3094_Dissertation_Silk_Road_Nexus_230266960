@@ -31,7 +31,7 @@ import {
   ChevronsRight,
 } from "lucide-react"
 import { TopNav } from "@/components/top-nav"
-import { RelationshipGraph, type GraphMode } from "@/components/graph/relationship-graph"
+import { MemoizedRelationshipGraph, type GraphMode } from "@/components/graph/relationship-graph"
 import { EntityPanel } from "@/components/explore/entity-panel"
 import { SearchCommand } from "@/components/search-command"
 import { Slider } from "@/components/ui/slider"
@@ -110,12 +110,14 @@ function LeftPanel({
   collapsed,
   onToggle,
   mode,
+  onSelectEntity,
 }: {
   centuryYear: number
   onCenturyChange: (year: number) => void
   collapsed: boolean
   onToggle: () => void
   mode: GraphMode
+  onSelectEntity: (entity: SilkRoadEntity) => void
 }) {
   const century = getCenturyWindow(centuryYear)
   const regionalData = useMemo(() => computeRegionalData(), [])
@@ -209,9 +211,20 @@ function LeftPanel({
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Search Section */}
+        <div>
+          <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-accent">
+            Locate on Graph
+          </div>
+          <SearchCommand compact onSelectEntity={onSelectEntity} />
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Highlight entities and see their connections on the graph.
+          </p>
+        </div>
+
         {/* Dataset Overview Section */}
-        <div className="mb-3 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        <div className="text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           Dataset Overview
         </div>
 
@@ -272,9 +285,9 @@ function LeftPanel({
                   <span className="w-6 text-right text-xs font-semibold text-foreground">{region.count}</span>
                 </div>
               </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
         {/* Temporal Filter / Timeline - AT THE BOTTOM */}
         <div className="rounded-lg border border-border bg-muted/20 p-3">
@@ -439,7 +452,7 @@ function LeftPanel({
       {/* Footer */}
       <div className="border-t border-border px-4 py-2 text-center">
         <span className="text-[9px] text-muted-foreground">
-          Designed by <span className="text-accent">Saud Najem S Alnajem</span>
+          Designed and Developed by <span className="text-accent">Saud Najem S Alnajem</span>
         </span>
       </div>
     </div>
@@ -497,17 +510,13 @@ function GraphContent() {
           collapsed={leftPanelCollapsed}
           onToggle={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
           mode={mode}
+          onSelectEntity={handleSearchSelect}
         />
 
         {/* CENTER: Graph Canvas */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Top Toolbar */}
           <div className="flex items-center justify-between border-b border-border bg-card px-4 py-2">
-            {/* Search */}
-            <div className="w-48">
-              <SearchCommand compact onSelectEntity={handleSearchSelect} />
-            </div>
-
             {/* Graph Mode Toggles - Centered */}
             <div className="flex items-center gap-1 rounded-lg bg-muted/50 p-1">
               {GRAPH_MODES.map((m) => {
@@ -534,7 +543,7 @@ function GraphContent() {
             {/* Spacer for balance */}
             <div className="w-48" />
           </div>
-          
+
           {/* Mode Description Bar */}
           <div className="border-b border-border bg-muted/30 px-4 py-2">
             <p className="text-center text-xs text-muted-foreground">
@@ -545,7 +554,7 @@ function GraphContent() {
 
           {/* Graph Area */}
           <div className="relative flex-1 parchment-bg">
-            <RelationshipGraph
+            <MemoizedRelationshipGraph
               onSelectEntity={handleSelectEntity}
               focusId={activeFocusId}
               isDark={isDark}

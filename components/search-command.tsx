@@ -98,7 +98,7 @@ export function SearchCommand({ onSelectEntity, compact }: SearchCommandProps) {
       if (onSelectEntity) {
         onSelectEntity(entity)
       } else {
-        router.push(`/explore?select=${entity.id}`)
+        router.push(`/entity/${entity.id}`)
       }
     },
     [onSelectEntity, router]

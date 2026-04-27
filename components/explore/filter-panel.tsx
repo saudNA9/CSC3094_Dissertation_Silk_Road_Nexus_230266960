@@ -164,23 +164,28 @@ export function FilterPanel({
   }, [])
 
   return (
-    <div className="silk-scrollbar flex h-full flex-col gap-5 overflow-y-auto parchment-bg p-4">
-      {/* Ornamental header */}
-      <div className="flex items-center gap-2">
-        <Compass className="h-4 w-4 text-accent" />
-        <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-accent">
-          Navigation
-        </h2>
-      </div>
+    <div className="flex h-full flex-col parchment-bg">
+      {/* Scrollable content area */}
+      <div className="silk-scrollbar flex-1 flex flex-col gap-5 overflow-y-auto p-4">
+        {/* Ornamental header */}
+        <div className="flex items-center gap-2">
+          <Compass className="h-4 w-4 text-accent" />
+          <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-accent">
+            Navigation
+          </h2>
+        </div>
 
       {/* Inline Search */}
       <div>
         <h3 className="heritage-divider mb-3">
           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.15em] text-accent">
-            Search
+            Find on Map
           </span>
         </h3>
         <SearchCommand compact onSelectEntity={onSearchSelect} />
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Find and display entities on the map with details.
+        </p>
       </div>
 
       {/* Timeline */}
@@ -190,7 +195,7 @@ export function FilterPanel({
             Timeline
           </span>
         </h3>
-        
+
         {/* BCE/CE Note */}
         <p className="mb-3 text-center text-[9px] text-muted-foreground">
           <span className="font-medium">BCE</span> = Before Common Era | <span className="font-medium">CE</span> = Common Era
@@ -407,9 +412,17 @@ export function FilterPanel({
             onClick={onJumpToIstanbul}
           >
             <MapPin className="h-3 w-3 text-accent" />
-            Jump to Constantinople
+            Start from Constantinople
           </Button>
         </div>
+      </div>
+      </div>
+
+      {/* Footer - outside scrollable area */}
+      <div className="border-t border-border px-4 py-2 text-center">
+        <span className="text-[9px] text-muted-foreground">
+          Designed and Developed by <span className="text-accent">Saud Najem S Alnajem</span>
+        </span>
       </div>
     </div>
   )
