@@ -1,6 +1,6 @@
 /*
  * app/layout.tsx
- * Root layout for the Silk Road Nexus application.
+ * Root layout for my Silk Road Nexus application.
  * It will:
  * - Load and configure Inter (body) and JetBrains Mono (code) from Google Fonts
  * - Wrap every page in the dark/light ThemeProvider
@@ -26,8 +26,17 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Silk Road Nexus",
   description:
-    "Design and Implementation of an Integrated Data-Driven System for Spatial, Temporal, and Semantic Exploration of Silk Roads Cultural Heritage",
-  generator: "v0.app",
+    "An integrated platform for spatial, temporal, and semantic exploration of Silk Roads cultural heritage.",
+  icons: {
+    icon: [
+      {
+        url: "/silkroadsnexus-favicon.png?v=10",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/silkroadsnexus-favicon.png?v=10",
+    apple: "/silkroadsnexus-favicon.png?v=10",
+  },
 }
 
 export const viewport = {
@@ -39,9 +48,9 @@ export const viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body

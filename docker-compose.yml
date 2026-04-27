@@ -15,17 +15,46 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: silkroad_backend
     restart: always
     environment:
-      FLASK_APP: app.py
+      FLASK_APP: backend.app
       SECRET_KEY: silk-road-docker-key
       DATABASE_URL: mysql+pymysql://silkroad_user:silkroad_pass@mysql:3306/silkroad_db
     ports:
       - "5000:5000"
     depends_on:
       - mysql
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: silkroad_frontend
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: /api
+      NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: silkroad_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certificates:/etc/nginx/certificates
+    depends_on:
+      - frontend
+      - backend
 
 volumes:
   mysql_data:

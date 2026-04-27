@@ -9,7 +9,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Produces a self-contained .next/standalone folder — required for the Dockerfile
+  // Produces a self-contained .next/standalone folder — required for the Dockerfile.frontend
   output: 'standalone',
 
   typescript: {

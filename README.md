@@ -311,7 +311,7 @@ docker run -p 3000:3000 --env-file .env silk-road-nexus
 
 **Backend Container** — Build and run the Flask API:
 ```bash
-docker build -f Dockerfile.backend -t silk-road-api .
+docker build -f Dockerfile.frontend.backend -t silk-road-api .
 docker run -p 5000:5000 --env-file .env silk-road-api
 ```
 
