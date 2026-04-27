@@ -37,7 +37,7 @@ jobs:
 
       - name: Run backend tests
         run: |
-          pytest
+          PYTHONPATH=. pytest
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
