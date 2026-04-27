@@ -1,17 +1,29 @@
 # backend/tests/test_api.py
 
 import pytest
+
 from backend.app import app
+from backend.models import db
 
 
-@pytest.fixture
+@pytest.fixture()
 def client():
-    app.config.update({
-        "TESTING": True,
-    })
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        }
+    )
 
-    with app.test_client() as client:
-        yield client
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+        with app.test_client() as client:
+            yield client
+
+        db.session.remove()
+        db.drop_all()
 
 
 def test_entities_endpoint_returns_200(client):
