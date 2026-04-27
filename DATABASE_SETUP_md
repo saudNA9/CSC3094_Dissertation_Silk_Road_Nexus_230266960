@@ -1,0 +1,110 @@
+# Prisma Database Setup Guide for me and for whoever will view this project and want to follow the same approach
+
+This guide explains how to set up the database with both SQLite (local) and MySQL (Docker).
+
+## Quick Start - Local Development (SQLite)
+
+SQLite is the default and requires zero setup:
+
+```bash
+# 1. Install dependencies
+pnpm install
+
+# 2. Create database and run migrations
+pnpm prisma:migrate
+
+# 3. Seed the database with your existing data
+pnpm prisma:seed
+
+# 4. Start development server
+pnpm dev
+```
+
+The SQLite database will be created at `prisma/dev.db`.
+
+## Setup with Docker (MySQL)
+
+For production or if you prefer MySQL:
+
+### Prerequisites
+- Install Docker and Docker Compose
+- MySQL will run in a container
+
+### Steps
+
+```bash
+# 1. Start MySQL in Docker
+docker-compose up -d
+
+# Wait for MySQL to be ready (~10 seconds)
+
+# 2. Change database to MySQL in .env.local
+# Edit .env.local and uncomment MySQL lines:
+DATABASE_PROVIDER=mysql
+DATABASE_URL="mysql://silk_road:silk_road_password@localhost:3306/silk_road_nexus"
+
+# 3. Run migrations
+pnpm prisma:migrate
+
+# 4. Seed the database
+pnpm prisma:seed
+
+# 5. Start development server
+pnpm dev
+```
+
+### Stopping MySQL
+```bash
+docker-compose down
+```
+
+### Viewing the database
+```bash
+# For SQLite
+pnpm prisma:studio
+
+# Then open http://localhost:5555 in your browser
+```
+
+## Database Schema
+
+Tables created:
+- **Traveller** - The main traveller records (Marco Polo, Xuanzang, Ibn Battuta, etc.)
+- **JourneyStop** - Each stop on a traveller's journey (8 stops per traveller)
+- **TravellerInsight** - Historical insights about each traveller
+- **SilkRoadEntity** - Cities, people, goods, events on the Silk Road
+- **SilkRoadRelationship** - Connections between entities
+
+## Environment Variables
+
+- `DATABASE_PROVIDER` - Either `sqlite` or `mysql`
+- `DATABASE_URL` - Connection string (file path for SQLite, connection URL for MySQL)
+
+## API Routes
+
+Once the database is seeded:
+
+- `GET /api/travellers` - Get all travellers with their journeys
+- `GET /api/travellers/[slug]` - Get a specific traveller (e.g., `/api/travellers/xuanzang`)
+
+## Next Steps
+
+1. Update your frontend components to fetch from the API instead of importing TypeScript files
+2. Build an admin panel to add/edit travellers and entities
+3. Add user features (favorites, annotations, journey tracking)
+
+## Troubleshooting
+
+### "Database connection failed"
+- For SQLite: Make sure the `prisma` folder exists and is writable
+- For MySQL: Check that Docker container is running (`docker ps`)
+
+### "Migration failed"
+```bash
+# Reset the database (WARNING: deletes all data)
+pnpm prisma:migrate reset
+
+# Then seed again
+pnpm prisma:seed
+```
+
