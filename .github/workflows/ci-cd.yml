@@ -10,6 +10,12 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME_BACKEND: saudna9/csc3094-dissertation-silk-road-nexus-230266960-backend
   IMAGE_NAME_FRONTEND: saudna9/csc3094-dissertation-silk-road-nexus-230266960-frontend
+  MYSQL_DATABASE: silkroad_db
+  MYSQL_USER: silkroad_user
+  MYSQL_PASSWORD: ci_mysql_password
+  MYSQL_ROOT_PASSWORD: ci_root_password
+  SECRET_KEY: ci-secret-key
+  DATABASE_URL: mysql+pymysql://silkroad_user:ci_mysql_password@mysql:3306/silkroad_db
 
 jobs:
   tests:

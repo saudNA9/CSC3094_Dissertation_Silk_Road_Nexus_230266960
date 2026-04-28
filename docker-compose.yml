@@ -4,10 +4,10 @@ services:
     container_name: silkroad_mysql
     restart: always
     environment:
-      MYSQL_DATABASE: silkroad_db
-      MYSQL_USER: silkroad_user
-      MYSQL_PASSWORD: silkroad_pass
-      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -22,7 +22,7 @@ services:
     environment:
       FLASK_APP: backend.app
       SECRET_KEY: silk-road-docker-key
-      DATABASE_URL: mysql+pymysql://silkroad_user:silkroad_pass@mysql:3306/silkroad_db
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
     ports:
       - "5000:5000"
     depends_on:
