@@ -49,7 +49,7 @@ const TRADED_GOODS_IMAGES = [
   {
     name: "Persian Carpets",
     origin: "Persia & Central Asia",
-    image: "/images/persian-rug.png",
+    image: "/images/persian-rug.jpg",
     description: "Intricate weavings that carried artistic traditions across continents"
   },
   {
@@ -61,7 +61,7 @@ const TRADED_GOODS_IMAGES = [
   {
     name: "Paper & Manuscripts",
     origin: "Samarkand",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Rf8ZZgzdGGlUN7IA2N20GVoxCOLOME.png",
+    image: "/images/manuscript-paper.jpg",
     description: "Knowledge and writing spreading along the routes"
   },
 ]

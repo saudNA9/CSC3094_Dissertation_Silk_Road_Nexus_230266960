@@ -201,7 +201,7 @@ export default function TravellerPage() {
       <section className="border-t border-border bg-muted/30 py-12">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Each journey is meticulously reconstructed from historical sources including primary accounts, 
+            Each journey is carefully built from historical sources including first-hand accounts,
             archaeological evidence, and scholarly research. Experience history as it was lived.
           </p>
         </div>

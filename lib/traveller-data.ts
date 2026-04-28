@@ -220,7 +220,7 @@ export const TRAVELLERS: Traveller[] = [
     origin: "Venice, Italy",
     destination: "Khanbaliq (Beijing), China",
     purpose: "Trade & Diplomatic Mission",
-    image: "/images/travellers/marco-polo.png",
+    image: "/images/marco-polo.jpg",
     ctaLabel: "Journey with the Merchant",
     shortDescription:
       "A Venetian merchant who spent 24 years travelling through Asia, serving in the court of Kublai Khan and documenting the wonders of the East in unprecedented detail.",
@@ -396,7 +396,7 @@ export const TRAVELLERS: Traveller[] = [
     origin: "Tangier, Morocco",
     destination: "The Islamic World and Beyond",
     purpose: "Pilgrimage, Scholarship & Exploration",
-    image: "/images/travellers/ibn-battuta.png",
+    image: "/images/ibn-battuta.jpg",
     ctaLabel: "Explore with the Scholar",
     shortDescription:
       "A Moroccan scholar who travelled further than any known explorer before him, journeying through the entire Islamic world and beyond over nearly thirty years.",
