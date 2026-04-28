@@ -13,8 +13,12 @@ db = SQLAlchemy()
 
 entity_relation = db.Table(
     "entity_relation",
-    db.Column("source_id", db.String(100), db.ForeignKey("entity.id"), primary_key=True),
-    db.Column("target_id", db.String(100), db.ForeignKey("entity.id"), primary_key=True),
+    db.Column(
+        "source_id", db.String(100), db.ForeignKey("entity.id"), primary_key=True
+    ),
+    db.Column(
+        "target_id", db.String(100), db.ForeignKey("entity.id"), primary_key=True
+    ),
 )
 
 
@@ -82,9 +86,7 @@ class Entity(db.Model):
                 {"name": f.name, "role": f.role, "period": f.period}
                 for f in self.notable_figures_rel
             ],
-            "centuryNotes": {
-                n.century_key: n.note for n in self.century_notes_rel
-            },
+            "centuryNotes": {n.century_key: n.note for n in self.century_notes_rel},
         }
 
 

@@ -48,25 +48,25 @@ def search():
 
         for term in terms:
             if term in name:
-                score += 10       # Name substring match — highest weight
+                score += 10  # Name substring match — highest weight
             if name.startswith(term):
-                score += 5        # Prefix match bonus for autocomplete-style queries
+                score += 5  # Prefix match bonus for autocomplete-style queries
             if etype == term:
-                score += 6        # Exact type match (e.g. searching "city" or "good")
+                score += 6  # Exact type match (e.g. searching "city" or "good")
             if term in region:
-                score += 4        # Region match (e.g. "persia", "china")
+                score += 4  # Region match (e.g. "persia", "china")
             if term in desc:
-                score += 2        # Description match — lowest weight, very broad
+                score += 2  # Description match — lowest weight, very broad
             if any(term in g.lower() for g in goods):
-                score += 5        # Traded goods match
+                score += 5  # Traded goods match
             if any(term in e.lower() for e in events):
-                score += 4        # Historical event match
+                score += 4  # Historical event match
             if any(term in f for f in figures):
-                score += 5        # Notable figure match
+                score += 5  # Notable figure match
             if any(term in r.lower() for r in routes_list):
-                score += 3        # Connected route match
+                score += 3  # Connected route match
             if term in significance:
-                score += 2        # Trade significance text match
+                score += 2  # Trade significance text match
 
         if score > 0:
             scored.append((entity, score))

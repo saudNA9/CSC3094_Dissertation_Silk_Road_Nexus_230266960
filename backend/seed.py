@@ -18,7 +18,14 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.app import create_app
-from backend.models import db, Entity, NotableFigure, CenturyNote, RouteSegment, entity_relation
+from backend.models import (
+    db,
+    Entity,
+    NotableFigure,
+    CenturyNote,
+    RouteSegment,
+    entity_relation,
+)
 
 # ─────────────────────────────────────────
 # City data (mirrors lib/silk-road-data.ts)
@@ -37,13 +44,25 @@ CITIES = [
         "importance": "Major",
         "roles": ["Political Capital", "Trade Hub", "Religious Centre"],
         "tradeSignificance": "As the western anchor of the Silk Road, Constantinople was the primary gateway through which Eastern luxuries entered Europe. Its Golden Horn harbour and strategic position controlling the Bosphorus strait made it the most important trade city in the medieval world.",
-        "connectedRoutes": ["Northern Silk Road", "Southern Silk Road", "Maritime Mediterranean"],
+        "connectedRoutes": [
+            "Northern Silk Road",
+            "Southern Silk Road",
+            "Maritime Mediterranean",
+        ],
         "relatedGoods": ["Silk", "Spices", "Gold", "Ivory"],
         "relatedEvents": ["Fall of Constantinople", "Nika Riots"],
         "relatedEntities": ["baghdad", "antioch", "trabzon"],
         "notableFigures": [
-            {"name": "Justinian I", "era": "527-565 CE", "description": "Byzantine Emperor who revitalised silk production and trade"},
-            {"name": "Theodora", "era": "527-548 CE", "description": "Empress and co-regent who influenced trade policy"},
+            {
+                "name": "Justinian I",
+                "era": "527-565 CE",
+                "description": "Byzantine Emperor who revitalised silk production and trade",
+            },
+            {
+                "name": "Theodora",
+                "era": "527-548 CE",
+                "description": "Empress and co-regent who influenced trade policy",
+            },
         ],
         "centuryNotes": {
             "300-399": "Newly founded as Nova Roma by Constantine I, rapidly growing as a trade centre.",
@@ -66,14 +85,30 @@ CITIES = [
         "importance": "Major",
         "roles": ["Political Capital", "Cultural Centre", "Trade Hub"],
         "tradeSignificance": "Baghdad sat at the nexus of overland and riverine trade networks. The Tigris River connected it to Persian Gulf ports, while caravan routes linked it to Persia, Central Asia, and the Levant. Its famous bazaars were the largest markets in the medieval world.",
-        "connectedRoutes": ["Southern Silk Road", "Persian Gulf Maritime Route", "Tabriz-Baghdad Corridor"],
+        "connectedRoutes": [
+            "Southern Silk Road",
+            "Persian Gulf Maritime Route",
+            "Tabriz-Baghdad Corridor",
+        ],
         "relatedGoods": ["Paper", "Textiles", "Books", "Spices"],
         "relatedEvents": ["Founding of Baghdad", "Mongol Siege"],
         "relatedEntities": ["istanbul", "samarkand", "damascus"],
         "notableFigures": [
-            {"name": "Al-Mansur", "era": "754-775 CE", "description": "Caliph who founded the Round City of Baghdad"},
-            {"name": "Harun al-Rashid", "era": "786-809 CE", "description": "Caliph whose reign marked Baghdad's golden age"},
-            {"name": "Al-Khwarizmi", "era": "780-850 CE", "description": "Mathematician whose work spread along trade routes"},
+            {
+                "name": "Al-Mansur",
+                "era": "754-775 CE",
+                "description": "Caliph who founded the Round City of Baghdad",
+            },
+            {
+                "name": "Harun al-Rashid",
+                "era": "786-809 CE",
+                "description": "Caliph whose reign marked Baghdad's golden age",
+            },
+            {
+                "name": "Al-Khwarizmi",
+                "era": "780-850 CE",
+                "description": "Mathematician whose work spread along trade routes",
+            },
         ],
         "centuryNotes": {
             "700-799": "Founded in 762 CE as the Round City. Rapidly becomes the world's largest city.",
@@ -99,8 +134,16 @@ CITIES = [
         "relatedEvents": ["Timur's Capital", "Arab Conquest"],
         "relatedEntities": ["bukhara", "baghdad", "kashgar"],
         "notableFigures": [
-            {"name": "Timur (Tamerlane)", "era": "1370-1405 CE", "description": "Conqueror who made Samarkand his magnificent capital"},
-            {"name": "Ulugh Beg", "era": "1394-1449 CE", "description": "Astronomer-prince who built the famous observatory"},
+            {
+                "name": "Timur (Tamerlane)",
+                "era": "1370-1405 CE",
+                "description": "Conqueror who made Samarkand his magnificent capital",
+            },
+            {
+                "name": "Ulugh Beg",
+                "era": "1394-1449 CE",
+                "description": "Astronomer-prince who built the famous observatory",
+            },
         ],
         "centuryNotes": {
             "700-799": "Conquered by Arabs. Chinese paper-makers captured at Battle of Talas (751 CE).",
@@ -126,7 +169,11 @@ CITIES = [
         "relatedEvents": ["Mongol Invasion", "Samanid Dynasty"],
         "relatedEntities": ["samarkand", "merv", "kashgar"],
         "notableFigures": [
-            {"name": "Ibn Sina (Avicenna)", "era": "980-1037 CE", "description": "Polymath whose Canon of Medicine spread along trade routes"},
+            {
+                "name": "Ibn Sina (Avicenna)",
+                "era": "980-1037 CE",
+                "description": "Polymath whose Canon of Medicine spread along trade routes",
+            },
         ],
         "centuryNotes": {
             "900-999": "Capital of the Samanid dynasty. Peak of cultural and scholarly output.",
@@ -169,7 +216,11 @@ CITIES = [
         "relatedEvents": ["Mogao Cave Construction", "Tang Dynasty Peak"],
         "relatedEntities": ["kashgar", "xian", "turfan"],
         "notableFigures": [
-            {"name": "Xuanzang", "era": "602-664 CE", "description": "Buddhist monk whose pilgrimage passed through Dunhuang"},
+            {
+                "name": "Xuanzang",
+                "era": "602-664 CE",
+                "description": "Buddhist monk whose pilgrimage passed through Dunhuang",
+            },
         ],
     },
     {
@@ -190,7 +241,11 @@ CITIES = [
         "relatedEvents": ["Tang Dynasty Trade Peak", "An Lushan Rebellion"],
         "relatedEntities": ["dunhuang", "luoyang"],
         "notableFigures": [
-            {"name": "Emperor Taizong", "era": "626-649 CE", "description": "Tang emperor who opened the Silk Road to unprecedented trade"},
+            {
+                "name": "Emperor Taizong",
+                "era": "626-649 CE",
+                "description": "Tang emperor who opened the Silk Road to unprecedented trade",
+            },
         ],
         "centuryNotes": {
             "600-699": "Tang Dynasty capital. Population exceeds 1 million.",
@@ -233,7 +288,11 @@ CITIES = [
         "relatedEvents": ["Umayyad Capital", "Mongol Sack"],
         "relatedEntities": ["baghdad", "antioch", "aleppo"],
         "notableFigures": [
-            {"name": "Mu'awiya I", "era": "661-680 CE", "description": "First Umayyad caliph who made Damascus his capital"},
+            {
+                "name": "Mu'awiya I",
+                "era": "661-680 CE",
+                "description": "First Umayyad caliph who made Damascus his capital",
+            },
         ],
     },
     {
@@ -294,7 +353,11 @@ CITIES = [
         "relatedEvents": ["Ilkhanate Capital", "Marco Polo Visit"],
         "relatedEntities": ["trabzon", "baghdad", "istanbul"],
         "notableFigures": [
-            {"name": "Marco Polo", "era": "1271-1295 CE", "description": "Venetian traveller who praised Tabriz's Grand Bazaar"},
+            {
+                "name": "Marco Polo",
+                "era": "1271-1295 CE",
+                "description": "Venetian traveller who praised Tabriz's Grand Bazaar",
+            },
         ],
         "centuryNotes": {
             "1200-1299": "Capital of the Mongol Ilkhanate. Described by Marco Polo as having the world's finest bazaar.",
@@ -522,9 +585,15 @@ ROUTE_SEGMENTS = [
         "startYear": -200,
         "endYear": 1400,
         "coordinates": [
-            [108.9541, 34.2658], [94.6622, 40.1421], [89.1895, 42.9513],
-            [75.9797, 39.4547], [66.9597, 39.6542], [64.4556, 39.7681],
-            [62.17, 37.6639], [46.2738, 38.0962], [39.7168, 41.0027],
+            [108.9541, 34.2658],
+            [94.6622, 40.1421],
+            [89.1895, 42.9513],
+            [75.9797, 39.4547],
+            [66.9597, 39.6542],
+            [64.4556, 39.7681],
+            [62.17, 37.6639],
+            [46.2738, 38.0962],
+            [39.7168, 41.0027],
             [28.9784, 41.0082],
         ],
     },
@@ -536,9 +605,15 @@ ROUTE_SEGMENTS = [
         "startYear": -200,
         "endYear": 1400,
         "coordinates": [
-            [108.9541, 34.2658], [94.6622, 40.1421], [75.9797, 39.4547],
-            [66.9597, 39.6542], [62.17, 37.6639], [44.3661, 33.3152],
-            [36.2765, 33.5138], [37.1343, 36.2021], [36.1503, 36.2],
+            [108.9541, 34.2658],
+            [94.6622, 40.1421],
+            [75.9797, 39.4547],
+            [66.9597, 39.6542],
+            [62.17, 37.6639],
+            [44.3661, 33.3152],
+            [36.2765, 33.5138],
+            [37.1343, 36.2021],
+            [36.1503, 36.2],
             [28.9784, 41.0082],
         ],
     },
@@ -559,8 +634,11 @@ ROUTE_SEGMENTS = [
         "startYear": 300,
         "endYear": 1500,
         "coordinates": [
-            [44.3661, 33.3152], [48.5, 30.0], [52.0, 27.5],
-            [56.4608, 27.0858], [58.3829, 23.588],
+            [44.3661, 33.3152],
+            [48.5, 30.0],
+            [52.0, 27.5],
+            [56.4608, 27.0858],
+            [58.3829, 23.588],
         ],
     },
     {
@@ -608,20 +686,24 @@ def seed():
 
             # Notable figures
             for fig in d.get("notableFigures", []):
-                db.session.add(NotableFigure(
-                    entity_id=d["id"],
-                    name=fig["name"],
-                    role=fig.get("description", ""),
-                    period=fig.get("era", ""),
-                ))
+                db.session.add(
+                    NotableFigure(
+                        entity_id=d["id"],
+                        name=fig["name"],
+                        role=fig.get("description", ""),
+                        period=fig.get("era", ""),
+                    )
+                )
 
             # Century notes
             for key, note in d.get("centuryNotes", {}).items():
-                db.session.add(CenturyNote(
-                    entity_id=d["id"],
-                    century_key=key,
-                    note=note,
-                ))
+                db.session.add(
+                    CenturyNote(
+                        entity_id=d["id"],
+                        century_key=key,
+                        note=note,
+                    )
+                )
 
         db.session.flush()
 
@@ -635,15 +717,17 @@ def seed():
 
         # Route segments
         for r in ROUTE_SEGMENTS:
-            db.session.add(RouteSegment(
-                id=r["id"],
-                name=r["name"],
-                type=r["type"],
-                route_kind=r["routeKind"],
-                start_year=r["startYear"],
-                end_year=r["endYear"],
-                coordinates=json.dumps(r["coordinates"]),
-            ))
+            db.session.add(
+                RouteSegment(
+                    id=r["id"],
+                    name=r["name"],
+                    type=r["type"],
+                    route_kind=r["routeKind"],
+                    start_year=r["startYear"],
+                    end_year=r["endYear"],
+                    coordinates=json.dumps(r["coordinates"]),
+                )
+            )
 
         db.session.commit()
         print(f"Seeded {len(all_data)} entities and {len(ROUTE_SEGMENTS)} routes.")

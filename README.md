@@ -12,7 +12,7 @@
 | Institution      | School of Computing, Newcastle University           |
 | Author           | Saud Najem S. Alnajem (230266960)                   |
 | Supervisor       | Dr. Rouaa Yassin Kassab                             |
-| Academic Year    | 2025–2026                                           |
+| Academic Year    | 2025-2026                                           |
 | Dataset DOI      | https://doi.org/10.5281/zenodo.19684922             |
 | Dataset License  | CC BY-NC 4.0                                        |
 
@@ -24,7 +24,7 @@ I built the Silk Road Nexus as an interactive platform that enables historians, 
 
 - **Spatial Exploration (Map View)** — I integrated Mapbox GL to render the Silk Road network spatially. Users can see 3D architectural city markers I designed and animated trade route paths that evolve across centuries, transforming how people understand where commerce and culture flowed.
 
-- **Temporal Analysis (Timeline Slider)** — I built a century-based filter covering 300 BCE to 1500 CE. This reveals how networks rose, flourished, declined, and sometimes revived—allowing users to see history not as static facts, but as living processes.
+- **Temporal Analysis (Timeline Slider)** — I built a century-based filter covering 300 BCE to 1500 CE. This reveals how networks rose, flourished, declined, and sometimes revived-allowing users to see history not as static facts, but as living processes.
 
 - **Semantic Networks (Knowledge Graph)** — I implemented a D3.js force-directed graph with six layout modes to visualise how cities, goods, people, and events connected. This semantic view exposes relationships that raw data alone cannot convey.
 
@@ -35,9 +35,9 @@ I built the Silk Road Nexus as an interactive platform that enables historians, 
 During my research, I realised that existing Silk Road tools treated the network as either purely geographic (maps with no context) or purely textual (lists and tables). None offered *coordinated* exploration—where selecting an entity in one view automatically highlights it in all others.
 
 I set out to change that. Every design decision in this platform prioritises **coherence across views**:
-- Select a city on the map → it highlights in the graph and shows its full details
-- Advance the timeline → all three views animate simultaneously, showing how everything evolved
-- Search for a merchant → you can follow their entire journey, then explore all the cities they visited
+- Select a city on the map -> it highlights in the graph and shows its full details
+- Advance the timeline -> all three views animate simultaneously, showing how everything evolved
+- Search for a merchant -> you can follow their entire journey, then explore all the cities they visited
 
 This triadic approach transforms the Silk Road from a historical curiosity into an explorable, *interactive* network.
 
@@ -82,7 +82,7 @@ I implemented the following core features:
 | Graph        | D3.js (force simulation)                    | Most powerful force-directed layout engine; full control over physics |
 | Backend      | Flask (Python) + SQLAlchemy ORM             | Lightweight, flexible; easy to extend; excellent for rapid research prototyping |
 | Database     | SQLite (dev) / MySQL (prod)                 | SQLite requires zero setup locally; MySQL scales for production |
-| Containerisation | Docker + docker-compose                 | Reproducible environments; deployment-ready architecture; platform-agnostic |
+| Containerisation | Docker + docker-compose + Nginx reverse proxy | Reproducible environments; three-tier architecture; platform-agnostic |
 | Fonts        | Inter (body), JetBrains Mono (code)         | Readable at all sizes; monospace improves data table legibility |
 
 ---
@@ -159,11 +159,177 @@ silk-road-nexus/
 ├── postcss.config.mjs          # PostCSS pipeline
 ├── tsconfig.json               # TypeScript strict mode + path aliases
 │
-├── .env.local               # Environment variable 
+├── .env.example                # Environment variable template
 ├── .eslintrc.json              # ESLint rules
 ├── .prettierrc                 # Prettier formatting config
 └── README.md                   # This file
 ```
+
+---
+
+## Three-Tier Architecture
+
+The Silk Road Nexus implements a production-grade three-tier architecture with containerisation and reverse proxy routing:
+
+```
+User Browser
+    |
+    v
+Nginx Reverse Proxy (port 80/443)
+    |
+    +---> Frontend (Next.js, port 3000)
+    |
+    +---> Backend API (Flask, port 5000)
+            |
+            v
+        SQLite/MySQL Database
+```
+
+**Architectural benefits**:
+- Single entry point (no port management for users)
+- SSL/TLS termination at Nginx layer
+- Backend services hidden behind proxy (improved security)
+- Horizontal scaling (add multiple backend instances behind Nginx load balancing)
+- Service isolation (each tier can be deployed independently)
+
+---
+
+## Database Setup
+
+### Development: SQLite (Zero Setup)
+
+SQLite is the default local database - no installation required:
+
+```bash
+# Create .env.local with SQLite database URL
+echo "DATABASE_URL=sqlite:./data/app.db" > .env.local
+
+# Create tables and seed data
+node scripts/migrate-data.js
+
+# Backend will use SQLite automatically
+python backend/seed.py
+```
+
+SQLite database file will be created at `/data/app.db`.
+
+### Production: MySQL
+
+For production deployments with Docker:
+
+```bash
+# 1. Start MySQL via docker-compose
+docker-compose up mysql
+
+# 2. Create .env with MySQL connection string
+echo "DATABASE_URL=mysql://root:password@mysql:3306/silk_road_nexus" > .env
+
+# 3. Run migrations
+python backend/seed.py
+
+# 4. Start backend
+docker-compose up backend
+```
+
+**MySQL via docker-compose** automatically:
+- Creates the `silk_road_nexus` database
+- Sets root password from `MYSQL_ROOT_PASSWORD` env var
+- Exposes port 3306 (accessible from other containers via hostname `mysql`)
+- Mounts `/var/lib/mysql` volume (persistent data)
+
+### ORM Protection
+
+Both SQLite and MySQL queries use **SQLAlchemy ORM** for automatic SQL injection protection:
+
+```python
+# Safe - SQLAlchemy parameterizes automatically
+entity = Entity.query.filter_by(id=entity_id).first()
+
+# All queries use prepared statements, never raw string concatenation
+```
+
+---
+
+## Docker & DevSecOps
+
+### Hardened Container Images
+
+Production containers follow security best practices:
+
+**Backend (Python Flask)**:
+- Non-root user (`appuser`) prevents privilege escalation
+- Multi-stage build removes dev dependencies from runtime image
+- Minimal `python:3.11-slim` base (Alpine-like footprint)
+- Read-only filesystem (writable only `/tmp`, `/var/tmp`)
+- Health checks with automatic restart on failure
+- Dropped Linux capabilities (only NET_BIND_SERVICE retained)
+
+**Frontend (Next.js)**:
+- Non-root user (`nextjs`) for isolation
+- Multi-stage build (builder -> runtime)
+- Alpine runtime image (minimal attack surface)
+- Read-only filesystem except `/app/.next/cache`
+- Security headers enforced (CSP, X-Frame-Options, HSTS)
+
+**Nginx Reverse Proxy**:
+- Alpine base image (~10MB vs standard ~180MB)
+- Non-root user for worker processes
+- SSL/TLS termination with hardcoded ciphers
+- Rate limiting (100 req/min API, 30 req/min search)
+- Request correlation tracking (X-Request-ID, X-Request-Timestamp)
+
+### Building Hardened Images
+
+```bash
+# Production build with security hardening
+docker-compose -f docker-compose.hardened.yml up
+
+# Individual images
+docker build -f backend/Dockerfile -t silk-road-api:latest .
+docker build -f Dockerfile.frontend -t silk-road-nexus:latest .
+```
+
+### Security Features
+
+- **No root execution** - all processes run as non-root users
+- **Read-only filesystem** - prevents runtime modifications
+- **Capability dropping** - removes unnecessary Linux capabilities
+- **Health checks** - automatic recovery on service failure
+- **No new privileges** - processes cannot escalate permissions
+- **Localhost-only binding** - services only accessible through Nginx, not directly exposed
+
+For detailed hardening checklist, see `DOCKER_HARDENING.md`.
+
+---
+
+## DevSecOps Practices
+
+The platform implements comprehensive security measures across all layers:
+
+### Code Security
+- **XSS Prevention** - `sanitizeInput()` utility escapes all user input
+- **SQL Injection Protection** - SQLAlchemy ORM parameterized queries
+- **CSRF Tokens** - generated per-request via middleware
+- **Type Safety** - TypeScript strict mode catches errors at compile time
+
+### API Security
+- **Security Headers** - CSP, X-Frame-Options, HSTS, X-Content-Type-Options, etc. (via middleware)
+- **Request Tracking** - X-Request-ID and X-Request-Timestamp for audit logs
+- **Rate Limiting** - backend enforces 100 req/min for API, 30 req/min for search
+- **Secrets Management** - all API keys and passwords loaded from environment variables
+
+### Container Security
+- **Image Scanning** - GitHub Actions runs Trivy vulnerability scanner on every build
+- **Multi-stage builds** - removes dev dependencies from final images
+- **Non-root users** - all containers run without root privileges
+- **Minimal base images** - Alpine, Slim variants reduce CVE surface
+- **Read-only filesystems** - prevents runtime modifications
+
+### CI/CD Pipeline
+- **Automated testing** - ESLint, TypeScript, Prettier on every push
+- **Docker build validation** - ensures images build successfully
+- **Security scanning** - Trivy scans for known vulnerabilities
+- **GitHub Actions workflows** - `.github/workflows/` directory
 
 ---
 
@@ -190,19 +356,31 @@ cd CSC3094-silk-road-nexus
 npm install
 
 # Set up environment
-cp .env.local .env.local
+cp .env.example .env.local
 # Add your NEXT_PUBLIC_MAPBOX_TOKEN to .env.local
 
 # Start the dev server with hot reload
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000). The app uses the static dataset by default — zero backend needed.
+Visit [http://localhost:3000](http://localhost:3000). The app uses the static dataset by default - zero backend needed.
 
-### Full Stack Development (Frontend + Backend)
+### Full Stack Development (Frontend + Backend + Database)
 
-To run both the Next.js frontend and Flask API:
+To run the complete three-tier stack with MySQL:
 
+**Option A: Docker Compose (Recommended)**
+```bash
+# Start entire stack (frontend, backend, MySQL, Nginx)
+docker-compose up
+
+# Or hardened production stack
+docker-compose -f docker-compose.hardened.yml up
+```
+
+Access via `http://localhost` through Nginx reverse proxy.
+
+**Option B: Local Processes**
 ```bash
 # Terminal 1: Start the frontend
 npm run dev
@@ -211,25 +389,26 @@ npm run dev
 cd backend
 pip install -r requirements.txt
 python seed.py              # one-time: create tables and seed data
-flask run --port 5000
+python app.py               # or: flask run --port 5000
 ```
 
 Set `NEXT_PUBLIC_API_URL=http://localhost:5000` in `.env.local` to use the live backend.
 
 ### Docker (Containerised Deployment)
 
-I containerised the app for reproducible deployments:
+Production-ready containerised deployment with hardening:
 
 ```bash
-# Production image
-npm run docker:build
-npm run docker:run
+# Hardened production stack (security best practices)
+docker-compose -f docker-compose.hardened.yml up
 
-# Development with hot reload
-npm run docker:dev
+# Development stack with hot reload
+docker-compose -f docker-compose.yml up
 
-# Entire stack via docker-compose
-docker-compose up
+# Individual service builds
+docker build -f backend/Dockerfile -t silk-road-api:latest .
+docker build -f Dockerfile.frontend -t silk-road-nexus:latest .
+docker build -f nginx/Dockerfile -t silk-road-nginx:latest nginx/
 ```
 
 ---
@@ -238,8 +417,12 @@ docker-compose up
 
 | Variable                  | Required | Default | Description |
 |---------------------------|----------|---------|---|
-| `NEXT_PUBLIC_MAPBOX_TOKEN`| Yes      | —       | Public Mapbox GL JS access token |
+| `NEXT_PUBLIC_MAPBOX_TOKEN`| Yes      | -       | Public Mapbox GL JS access token |
 | `NEXT_PUBLIC_API_URL`     | No       | (static data) | Flask backend URL; if omitted, uses bundled TypeScript dataset |
+| `DATABASE_URL`            | No       | sqlite:./data/app.db | Database connection string (SQLite for dev, MySQL for prod) |
+| `MYSQL_ROOT_PASSWORD`     | No       | root    | MySQL root password (used in docker-compose) |
+| `FLASK_APP`               | No       | backend.app | Flask application entry point |
+| `FLASK_ENV`               | No       | production | Flask environment (development or production) |
 
 ---
 
@@ -251,7 +434,7 @@ I curated a comprehensive Silk Road dataset with:
 - **14 trade routes** (3 primary networks, 11 secondary branches) with animated polylines and temporal date ranges
 - **6 historical travellers** with documented routes: Marco Polo, Ibn Battuta, Xuanzang, Zhang Qian, Fa Xian, Zheng He
 - **100+ entities** across 6 types: City, Route, Person, Good, Event, Inscription
-- **Temporal range**: 300 BCE – 1500 CE, allowing exploration of 18 centuries of Silk Road evolution
+- **Temporal range**: 300 BCE - 1500 CE, allowing exploration of 18 centuries of Silk Road evolution
 
 **Published on Zenodo**: [https://zenodo.org/records/19684922](https://zenodo.org/records/19684922)  
 **License**: CC BY-NC 4.0
@@ -277,45 +460,39 @@ npm run quality           # Run all checks in series
 
 On every push:
 
-1. **Code Quality** — ESLint, Prettier, and TypeScript type-checking ensure consistent style and catch errors before merge
-2. **Build Verification** — Full Next.js build and Docker image build sanity-check on all branches
-3. **Security Scanning** — Automated vulnerability scanning of Docker images using Trivy
+1. **Code Quality** - ESLint, Prettier, and TypeScript type-checking ensure consistent style and catch errors before merge
+2. **Build Verification** - Full Next.js build and Docker image build sanity-check on all branches
+3. **Security Scanning** - Automated vulnerability scanning of Docker images using Trivy
 
 ---
 
-## Deployment-Ready Architecture
+## Deployment Options
 
-I containerised the entire application for reproducible, portable deployments to any Docker-capable environment—whether a cloud server, on-premises infrastructure, or research institution. No vendor lock-in.
+The containerised architecture supports multiple deployment targets without code changes:
 
-### Containerisation Strategy
+### Cloud Platforms
+- **AWS** - ECS (Elastic Container Service) or EKS (Kubernetes)
+- **Google Cloud** - Cloud Run or GKE
+- **Azure** - Container Instances or AKS
+- **DigitalOcean** - App Platform or Kubernetes
 
-```bash
-# Frontend & Backend containerised
-npm run docker:build      # Build production images
-npm run docker:run        # Run containerised stack locally
+### On-Premises
+- **Docker Swarm** - native clustering with docker-compose
+- **Kubernetes** - via provided Dockerfiles and manifests
+- **VM deployment** - with docker-compose orchestration
 
-# Development mode with hot reload
-npm run docker:dev        # Containers with live source mounting
+### Deployment Checklist
 
-# Full orchestration
-docker-compose up         # Spin up entire stack (dev + prod profiles)
-```
+Before deploying to production:
 
-### Deployment Instructions
+1. Update `docker-compose.hardened.yml` with your domain/SSL certificates
+2. Set all environment variables in `.env.docker` (use Nginx SSL, database credentials, API keys)
+3. Run `docker-compose -f docker-compose.hardened.yml up -d` to start services
+4. Verify health checks: `docker ps` should show all services healthy
+5. Access via your domain (Nginx handles SSL/TLS termination)
+6. Monitor logs: `docker logs -f silk-road-nexus` (frontend), `docker logs -f silk-road-api` (backend)
 
-**Frontend Container** — Build and run the Next.js app:
-```bash
-docker build -t silk-road-nexus .
-docker run -p 3000:3000 --env-file .env silk-road-nexus
-```
-
-**Backend Container** — Build and run the Flask API:
-```bash
-docker build -f Dockerfile.frontend.backend -t silk-road-api .
-docker run -p 5000:5000 --env-file .env silk-road-api
-```
-
-Set `NEXT_PUBLIC_API_URL=<your-backend-url>` in the frontend environment to connect to the backend. The architecture is flexible—deploy to AWS, Google Cloud, Azure, on-premises, or any Docker host that fits your institution's infrastructure.
+For detailed deployment instructions, see `DOCKER_HARDENING.md` and `DATABASE_SETUP.md`.
 
 ---
 
@@ -326,10 +503,8 @@ I prioritised performance for researchers who need instant feedback:
 - **Next.js Server Components** reduce client-side JavaScript
 - **Mapbox vector tiles** enable GPU acceleration for smooth pans/zooms
 - **D3 worker threads** prevent main thread blocking during force simulation
-- **API fallback** — if backend is slow, the app instantly uses static data
-- **Image optimisation** —  built-in Image component handles responsive serving
-
----
+- **API fallback** - if backend is slow, the app instantly uses static data
+- **Image optimisation** - Vercel's built-in Image component handles responsive serving
 
 ## Browser Support
 
@@ -348,18 +523,18 @@ WebGL (for Mapbox) is required. Older browsers will see a graceful degradation m
 
 If I were to continue this project, I would explore:
 
-- **Machine learning clustering** — auto-discover route patterns humans missed
-- **Real-time collaboration** — allow teams to annotate and share discoveries
-- **Time-lapse animations** — let users scrub through 2000 years of trade in seconds
-- **3D terrain** — add topography so users see how geography shaped routes
-- **Export to academic formats** — PDF reports, GeoJSON, BibTeX citations
+- **Machine learning clustering** - auto-discover route patterns humans missed
+- **Real-time collaboration** - allow teams to annotate and share discoveries
+- **Time-lapse animations** - let users scrub through 2000 years of trade in seconds
+- **3D terrain** - add topography so users see how geography shaped routes
+- **Export to academic formats** - PDF reports, GeoJSON, BibTeX citations
 
 ---
 
 ## License & Attribution
 
-**Code**: Academic project, Newcastle University 2025–2026  
-**Dataset**: CC BY-NC 4.0 — freely available for research and education
+**Code**: Academic project, Newcastle University 2025-2026  
+**Dataset**: CC BY-NC 4.0 - freely available for research and education
 
 ### Dataset Citation
 
@@ -367,7 +542,7 @@ If you publish work using this Silk Road dataset, please cite:
 
 ```bibtex
 @dataset{alnajem2026silkroad,
-  title = {The Silk Road Nexus Dataset: Curated Entity and Route Data for Integrated Spatial, Temporal, and Semantic Analysis (300 BCE – 1500 CE)},
+  title = {The Silk Road Nexus Dataset: Curated Entity and Route Data for Integrated Spatial, Temporal, and Semantic Analysis (300 BCE - 1500 CE)},
   author = {Alnajem, Saud Najem S.},
   year = {2026},
   organization = {Newcastle University},
@@ -376,6 +551,19 @@ If you publish work using this Silk Road dataset, please cite:
   license = {CC BY-NC 4.0}
 }
 ```
+
+### Platform Citation
+
+To cite the Silk Road Nexus platform itself:
+
+```bibtex
+@software{alnajem2026silkroadnexus,
+  title = {The Silk Road Nexus: A Multi-View Platform for Integrated Spatial, Temporal, and Semantic Exploration},
+  author = {Alnajem, Saud Najem S.},
+  year = {2026},
+  organization = {Newcastle University},
+  url = {https://github.com/saudNA9/CSC3094-silk-road-nexus}
+}
 ```
 
 ---
@@ -384,9 +572,10 @@ If you publish work using this Silk Road dataset, please cite:
 
 For issues, feature requests, or questions:
 
-1. **Check the Architecture page** — I documented design decisions at `/architecture`
-2. **Read the inline comments** — every file has detailed headers explaining its purpose
-3. **Open a GitHub issue** — describe what you found or what you'd like to build
+1. **Check the Architecture page** - I documented design decisions at `/architecture`
+2. **Read the inline comments** - every file has detailed headers explaining its purpose
+3. **Open a GitHub issue** - describe what you found or what you'd like to build
+4. **Review documentation** - See `DOCKER_HARDENING.md` and `DATABASE_SETUP.md` for detailed configuration
 
 ---
 
