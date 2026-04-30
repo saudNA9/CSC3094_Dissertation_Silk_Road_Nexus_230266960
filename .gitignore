@@ -1,12 +1,33 @@
-
+# v0 generated/runtime files
 __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 
-# Common ignores
+# Dependencies/build
 node_modules/
 .next/
-.env*.local
-.DS_Store
-certificates
+out/
+dist/
+
+# Environment/secrets
 .env
+.env.*
+!.env.example
+
+# OS/junk
+.DS_Store
+Thumbs.db
+
+# Certificates
+certificates/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+
+# Coverage
+coverage.xml
+htmlcov/

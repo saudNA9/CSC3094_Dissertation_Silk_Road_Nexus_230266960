@@ -412,7 +412,7 @@ export default function HomePage() {
           {/* Main title */}
           <div className="relative mb-6">
             <h1 className="text-center text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              Silk Road
+              Silk Roads
             </h1>
             <h2 className="mt-2 text-center text-5xl font-bold tracking-tight text-accent sm:text-6xl lg:text-7xl">
               Nexus
@@ -438,12 +438,6 @@ export default function HomePage() {
                 Begin Exploration
               </Button>
             </Link>
-            <Link href="/graph">
-              <Button size="lg" variant="outline" className="gap-2 border-accent/30 bg-white/50 px-8 hover:bg-accent/5 dark:bg-transparent">
-                <Network className="h-5 w-5" />
-                View Network Graph
-              </Button>
-            </Link>
           </div>
 
           {/* Scroll indicator */}
@@ -461,8 +455,10 @@ export default function HomePage() {
       <section className="relative bg-[#FAF8F5] py-10 dark:bg-[#1a1814]">
         <div className="mx-auto max-w-5xl px-6">
           <div className="mb-6 text-center">
-            <h3 className="text-lg font-bold text-foreground">Traded Goods</h3>
-            <p className="mt-1 text-xs text-muted-foreground">Commodities that shaped civilizations and connected continents</p>
+            <h3 className="text-lg font-bold text-foreground">Commodities That Connected Continents</h3>
+<p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+  Trade goods were more than economic items; they carried technologies, beliefs, artistic styles, and cultural practices across the Silk Roads.
+</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-10">
             {TRADED_GOODS.map((good) => (
@@ -515,31 +511,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Platform Capabilities - Minimal */}
-      <section className="relative bg-[#FAF8F5] py-10 dark:bg-[#1a1814]">
+      {/* About Section - Exploration Modes */}
+      <section id="about" className="relative border-y border-accent/10 bg-[#FFFDF9] py-12 dark:bg-[#1e1b16]">
         <div className="mx-auto max-w-4xl px-6">
-          <div className="flex flex-wrap items-center justify-center gap-6 text-center">
+          {/* Introduction to the three perspectives */}
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Understand the Silk Roads Through Multiple Lenses</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground max-w-2xl mx-auto mb-8">
+              The Silk Roads were not just trade routes—they were networks of cultural exchange, technological innovation, and human connection.
+              To truly understand this complexity, we present the data through three complementary analytical perspectives:
+            </p>
+          </div>
+
+          {/* Three perspectives explanation */}
+          <div className="grid gap-6 md:grid-cols-3 mb-12">
             {CAPABILITIES.map((cap) => {
               const Icon = cap.icon
               return (
-                <div key={cap.title} className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-accent" />
-                  <span className="text-sm font-medium text-foreground">{cap.title}</span>
+                <div key={cap.title} className="rounded-lg border border-accent/10 bg-white p-4 dark:bg-[#252119]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Icon className="h-5 w-5 text-accent" />
+                    <h3 className="font-semibold text-foreground">{cap.title}</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{cap.description}</p>
                 </div>
               )
             })}
           </div>
-        </div>
-      </section>
 
-      {/* About Section - Exploration Modes */}
-      <section id="about" className="relative border-y border-accent/10 bg-[#FFFDF9] py-12 dark:bg-[#1e1b16]">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="mb-6 text-center">
-            <h2 className="text-lg font-bold text-foreground">Choose Your Exploration</h2>
+          {/* Divider */}
+          <SilkRoadDivider className="mb-12" />
+
+          {/* Choose Your Exploration heading */}
+          <div className="mb-8 text-center">
+            <h3 className="text-lg font-bold text-foreground">Choose Your Exploration</h3>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* Exploration cards */}
+          <div className="grid gap-4 sm:grid-cols-2 mb-12">
             {/* Map Card */}
             <Link
               href="/explore"
@@ -570,26 +579,22 @@ export default function HomePage() {
               <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-accent" />
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* Timeline - Compact */}
-      <section className="relative bg-[#FAF8F5] py-10 dark:bg-[#1a1814]">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="flex items-center justify-center gap-3 text-center">
-            <Calendar className="h-4 w-4 text-accent" />
-            <span className="text-sm text-muted-foreground">
-              Spanning <span className="font-medium text-foreground">1,800 years</span> from 300 BCE to 1500 CE
-            </span>
-          </div>
-
-          {/* Simple timeline bar */}
-          <div className="mt-4 flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground">300 BCE</span>
-            <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-accent/10">
-              <div className="h-full w-full rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
+          {/* Timeline */}
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <Calendar className="h-4 w-4 text-accent" />
+              <span className="text-sm text-muted-foreground">
+                Spanning <span className="font-medium text-foreground">1,800 years</span> from 300 BCE to 1500 CE
+              </span>
             </div>
-            <span className="text-[10px] text-muted-foreground">1500 CE</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground">300 BCE</span>
+              <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-accent/10">
+                <div className="h-full w-full rounded-full bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
+              </div>
+              <span className="text-[10px] text-muted-foreground">1500 CE</span>
+            </div>
           </div>
         </div>
       </section>
