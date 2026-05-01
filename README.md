@@ -127,7 +127,7 @@ This structure prevents frontend/backend data divergence and ensures that both t
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| Frontend | Next.js 15 | App Router, page routing, frontend architecture |
+| Frontend | Next.js 15 + React | App Router, React components, page routing, frontend architecture |
 | Language | TypeScript | Type safety and structured frontend development |
 | Styling | Tailwind CSS + shadcn/ui | Responsive interface and reusable UI components |
 | Map | Mapbox GL JS | Spatial visualisation and interactive map rendering |

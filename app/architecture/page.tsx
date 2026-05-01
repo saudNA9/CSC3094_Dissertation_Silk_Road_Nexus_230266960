@@ -28,37 +28,37 @@ import { TopNav } from "@/components/top-nav"
 const DATA_MODEL_ENTITIES = [
   {
     name: "City",
-    description: "Geographic locations along Silk Road routes with coordinates, roles, and century notes",
+    description: "Geographic locations along Silk Roads routes with coordinates, roles, and temporal notes",
     fields: ["name", "region", "lat/lng", "importance", "startYear", "endYear", "roles[]", "centuryNotes{}"],
     count: "16 cities",
   },
   {
     name: "Route",
-    description: "Trade routes connecting cities as polyline segments with commodities",
+    description: "Trade-route records and route segments connecting locations across the Silk Roads network",
     fields: ["name", "type", "routeKind", "coordinates[][]", "primaryCommodities[]"],
-    count: "14 routes (3 primary, 11 secondary)",
+    count: "14 route segments",
   },
   {
     name: "Good",
-    description: "Traded commodities with origins and cultural significance",
+    description: "Traded commodities with origins, descriptions, and related Silk Roads entities",
     fields: ["name", "origin", "description", "relatedEntities[]"],
     count: "14 commodities",
   },
   {
     name: "Event",
-    description: "Historical events with spatial context and relationships",
+    description: "Historical events with spatial, temporal, and semantic relationships",
     fields: ["name", "location", "description", "year", "relatedEntities[]"],
     count: "17 events",
   },
   {
     name: "Person",
-    description: "Notable individuals in Silk Road history",
+    description: "Notable historical figures linked to places, routes, events, and goods",
     fields: ["name", "role", "activeYears", "relatedEntities[]"],
     count: "14 figures",
   },
   {
     name: "Inscription",
-    description: "Epigraphic and textual primary sources including manuscripts and stone inscriptions",
+    description: "Epigraphic and textual source records including manuscripts and stone inscriptions",
     fields: ["text", "location", "language", "date"],
     count: "5 inscriptions",
   },
@@ -68,40 +68,40 @@ const TECH_STACK = [
   {
     icon: Monitor,
     label: "Frontend",
-    items: ["Next.js 16 (App Router)", "React 19", "Tailwind CSS", "shadcn/ui", "TypeScript"],
+    items: ["Next.js 15 (App Router)", "React", "TypeScript", "Tailwind CSS", "shadcn/ui"],
   },
   {
     icon: Server,
     label: "Backend",
-    items: ["Flask (Python)", "SQLAlchemy ORM", "Flask-Migrate", "Flask-CORS", "RESTful API"],
+    items: ["Flask (Python)", "SQLAlchemy ORM", "Flask-CORS", "RESTful API", "Database seeding from shared JSON"],
   },
   {
     icon: Database,
     label: "Database",
     items: [
-      "SQLite (development)",
+      "SQLite for local development",
+      "MySQL for Docker deployment",
       "Entity / RouteSegment / Relationship tables",
-      "Many-to-many entity relations",
-      "JSON fields for flexible data",
+      "Century-note records",
     ],
   },
   {
     icon: Map,
     label: "Map Engine",
-    items: ["Mapbox GL JS", "Custom markers with city images", "Route polylines", "Subtle pattern overlay"],
+    items: ["Mapbox GL JS", "Custom 3D city markers", "Route polylines", "Interactive popups"],
   },
   {
     icon: GitBranch,
     label: "Graph Visualization",
-    items: ["D3.js force simulation", "Interactive drag & zoom", "Hover path highlighting", "Click-to-inspect"],
+    items: ["D3.js force simulation", "Interactive drag & zoom", "Relationship highlighting", "Click-to-inspect"],
   },
   {
     icon: Clock,
     label: "Temporal Logic",
     items: [
-      "Year-by-year slider + playback controls",
-      "100-year century window snap",
-      "Auto-play with speed control",
+      "Century-based filtering",
+      "Timeline slider and playback",
+      "100-year temporal windows",
       "Cross-view synchronization",
     ],
   },
@@ -142,7 +142,7 @@ export default function ArchitecturePage() {
           </p>
         </div>
 
-        {/* Dataset Information - NEW */}
+        {/* Dataset Information */}
         <section className="mb-16">
           <h2 className="mb-6 text-lg font-semibold text-foreground">
             Curated Dataset
@@ -157,19 +157,20 @@ export default function ArchitecturePage() {
                   </h3>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  A curated dataset of Silk Roads entities compiled specifically for this dissertation.
-                  The dataset includes 16 major cities, 14 trade routes, 14 traded commodities, 17 historical
-                  events, 14 notable figures, and 5 inscriptions, all with verified geographic coordinates, temporal ranges,
-                  and inter-entity relationships.
+                  A curated Silk Roads micro-dataset compiled specifically for this dissertation.
+                  The published dataset defines 81 conceptual entity records, 50 typed relationship
+                  records, 45 century-level temporal annotations, six entity types, and temporal
+                  coverage from approximately 300 BCE to 1500 CE. For implementation, the dataset is
+                  transformed into a shared JSON source used by both the frontend and backend.
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-lg border border-border bg-card p-3">
-                    <span className="text-2xl font-bold text-foreground">80+</span>
-                    <span className="ml-2 text-sm text-muted-foreground">Total Entities</span>
+                    <span className="text-2xl font-bold text-foreground">77</span>
+                    <span className="ml-2 text-sm text-muted-foreground">Operational Entities</span>
                   </div>
                   <div className="rounded-lg border border-border bg-card p-3">
-                    <span className="text-2xl font-bold text-foreground">60+</span>
-                    <span className="ml-2 text-sm text-muted-foreground">Relationships</span>
+                    <span className="text-2xl font-bold text-foreground">113</span>
+                    <span className="ml-2 text-sm text-muted-foreground">Stored Relationship Rows</span>
                   </div>
                 </div>
               </div>
@@ -226,7 +227,6 @@ export default function ArchitecturePage() {
           </h2>
           <div className="rounded-xl border border-border bg-card p-6 lg:p-8">
             <div className="flex flex-col items-center gap-4 lg:flex-row lg:gap-6">
-              {/* User */}
               <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-muted/50 px-6 py-4 text-center">
                 <Users className="h-6 w-6 text-accent" />
                 <span className="text-sm font-medium text-foreground">
@@ -239,7 +239,6 @@ export default function ArchitecturePage() {
 
               <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-muted-foreground lg:rotate-0" />
 
-              {/* Frontend */}
               <div className="flex flex-col items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 px-6 py-4 text-center">
                 <Monitor className="h-6 w-6 text-accent" />
                 <span className="text-sm font-medium text-foreground">
@@ -252,7 +251,6 @@ export default function ArchitecturePage() {
 
               <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-muted-foreground lg:rotate-0" />
 
-              {/* API Layer */}
               <div className="flex flex-col items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 px-6 py-4 text-center">
                 <Server className="h-6 w-6 text-accent" />
                 <span className="text-sm font-medium text-foreground">
@@ -265,11 +263,10 @@ export default function ArchitecturePage() {
 
               <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-muted-foreground lg:rotate-0" />
 
-              {/* Database */}
               <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-muted/50 px-6 py-4 text-center">
                 <Database className="h-6 w-6 text-accent" />
                 <span className="text-sm font-medium text-foreground">
-                  SQLite / DB
+                  SQLite / MySQL
                 </span>
                 <span className="text-[10px] text-muted-foreground">
                   SQLAlchemy ORM
@@ -292,12 +289,12 @@ export default function ArchitecturePage() {
               <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-center">
                 <Clock className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                 <span className="text-xs font-medium text-foreground">Temporal Engine</span>
-                <span className="text-[10px] text-muted-foreground">Century slices + playback</span>
+                <span className="text-[10px] text-muted-foreground">Century windows + playback</span>
               </div>
               <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-center">
                 <Layers className="h-5 w-5 text-violet-500 dark:text-violet-400" />
-                <span className="text-xs font-medium text-foreground">Dual-Mode Client</span>
-                <span className="text-[10px] text-muted-foreground">Flask API + static fallback</span>
+                <span className="text-xs font-medium text-foreground">Shared Data Layer</span>
+                <span className="text-[10px] text-muted-foreground">API + JSON source</span>
               </div>
             </div>
           </div>
@@ -391,15 +388,15 @@ export default function ArchitecturePage() {
                 </h3>
                 <div className="space-y-3 text-sm text-muted-foreground">
                   <p>
-                    The timeline slider allows year-by-year selection (smooth
-                    scrolling), but the underlying dataset filters in 100-year
-                    windows to maintain manageable data scope.
+                    The timeline supports smooth historical exploration, while the
+                    underlying filtering logic groups data into century-level windows
+                    to match the structure of the curated dataset.
                   </p>
                   <p>
-                    When a user selects year 847, the system internally
-                    queries entities active during the 800-899 century window.
-                    The UI clearly indicates both the selected year and the
-                    active data range.
+                    When a user selects year 847, the system identifies the
+                    corresponding 800-899 window and displays entities, routes,
+                    events, and relationships active within that period. The selected
+                    year and active temporal range are shown clearly in the interface.
                   </p>
                 </div>
               </div>
@@ -414,7 +411,7 @@ export default function ArchitecturePage() {
                   </div>
                   <div className="h-px bg-border" />
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Century snap:</span>
+                    <span className="text-muted-foreground">Century window:</span>
                     <span className="font-medium text-foreground">800 - 899</span>
                   </div>
                   <div className="h-px bg-border" />

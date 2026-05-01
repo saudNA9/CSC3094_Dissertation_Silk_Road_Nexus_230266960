@@ -16,7 +16,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // ✅ Allow external images (FIX for your error)
+  // ✅ Allow external images
   images: {
     remotePatterns: [
       {
