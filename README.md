@@ -1,4 +1,4 @@
-# The Silk Road Nexus
+# The Silk Roads Nexus
 
 **A Coordinated Multi-View Data-Driven Platform for Integrated Spatial, Temporal, and Semantic Exploration of Silk Roads Cultural Heritage**
 
@@ -8,7 +8,7 @@
 
 | Field | Detail |
 |---|---|
-| Module | CSC3094 Software Engineering Project |
+| Module | CSC3094 Major Project Dissertation |
 | Institution | School of Computing, Newcastle University |
 | Author | Saud Najem S. Alnajem (230266960) |
 | Supervisor | Dr. Rouaa Yassin Kassab |
@@ -20,89 +20,60 @@
 
 ## Overview
 
-The Silk Road Nexus is an interactive digital heritage platform developed for CSC3094. It enables users to explore Silk Roads cultural heritage through three coordinated views:
+The Silk Roads Nexus is a full-stack interactive digital heritage platform developed as the CSC3094 Major Project. It enables users to explore Silk Roads cultural heritage through three coordinated views that update together in response to user actions:
 
-- **Spatial View** — an interactive Mapbox map showing cities, routes, and custom 3D city markers.
-- **Temporal View** — a century-based timeline that filters entities and routes across historical periods.
-- **Semantic View** — a relationship graph showing how cities, routes, goods, persons, events, and inscriptions connect.
+- **Spatial View** — an interactive Mapbox GL JS map displaying 16 cities and 13 trade routes with custom zoom-triggered 3D architectural city markers.
+- **Temporal View** — a century-based timeline slider filtering entities across historical periods from 300 BCE to 1500 CE, with playback controls.
+- **Semantic View** — a D3.js force-directed graph rendering all 77 entities as colour-coded nodes across six switchable layout modes (Force, Radial, Hierarchy, Geographic, Trade, Timeline).
 
-The platform addresses fragmentation in existing digital heritage systems by linking map, timeline, and graph interactions through a shared dataset and backend API.
-
----
-
-## Core Contribution
-
-Existing Silk Roads resources often separate historical information across maps, text, timelines, and databases. This increases the effort required to understand where events happened, when they occurred, and how entities were connected.
-
-The Silk Road Nexus was designed to reduce this fragmentation by coordinating:
-
-- geographic exploration,
-- temporal filtering,
-- semantic relationship navigation,
-- contextual entity details,
-- traveller journey exploration.
-
-Selecting or filtering data in one part of the system updates the wider exploration experience, supporting non-linear historical discovery.
+The platform addresses a structural gap identified in existing digital heritage systems: spatial, temporal, and semantic information are typically fragmented across separate components. The Silk Roads Nexus links all three views through a shared backend API and a single-response dual-update mechanism, supporting coordinated, non-linear historical exploration.
 
 ---
 
-## Features
+## Evaluation Results
 
-- Interactive Mapbox map with Silk Roads cities and route overlays
-- Custom 3D architectural city markers
-- Century-based temporal filtering from ancient to late medieval periods
-- D3.js semantic relationship graph
-- Entity detail panels and entity pages
-- Traveller mode for historical figures such as Marco Polo, Ibn Battuta, Xuanzang, Zhang Qian, and Zheng He
-- Search functionality for entities and historical content
-- Dark and light theme support
-- Flask backend API for entities, routes, and search
-- SQLAlchemy ORM database layer
-- SQLite support for local development
-- MySQL support for Docker/production-style deployment
-- Docker Compose setup with frontend, backend, MySQL, and Nginx
-- Nginx reverse proxy configuration
-- Shared JSON dataset used by both frontend and backend
+The platform was evaluated through a structured mixed-method usability study:
+
+- **SUS (System Usability Scale):** mean score of **83.5 / 100** across 10 participants — grade A, *Best Imaginable* band (Lewis and Sauro), exceeding the industry benchmark of 68 and the predefined success criterion of 70.
+- **Think-Aloud:** 2 participants completed all 12 structured tasks. No task was abandoned and no facilitator intervention was required.
+- **Functional Testing:** 37 manual test cases and 5 pytest backend tests — all passed.
+- **Security:** SonarQube Cloud SAST scan across 22k lines returned Security Rating A with zero open issues.
+- **Code Quality:** Pylint score improved from 8.28 to 9.86/10 across two iterations.
 
 ---
 
 ## Dataset
 
-The platform is powered by a curated Silk Roads micro-dataset created for this CSC3094 project.
+The platform is powered by an original curated Silk Roads micro-dataset constructed for this project and published on Zenodo.
 
-The academic dataset was first constructed in Excel and published on Zenodo. For implementation, it was transformed into a shared JSON dataset located at:
-
-```
-data/silk-road-data.json
-```
-
-This JSON file is the operational source used by both layers of the system:
-
-- the frontend consumes it through `lib/silk-road-data.ts`
-- the backend seeding script `backend/seed.py` reads it to populate the database
-
-The published dataset defines:
-
-- 81 conceptual entity records
-- 50 typed relationship records
-- 45 century-level temporal annotations
-- six entity types: City, Route, Good, Event, Person, and Inscription
-- temporal coverage from approximately 300 BCE to 1500 CE
-
-During database seeding, the operational MySQL database stores:
-
-- 77 entity records after implementation-level merging
-- 113 relationship rows after deriving additional entity-level associations
-- 90 century-note rows after normalising embedded and explicit annotations
-- 14 route segments
-
-**Published dataset DOI:** https://doi.org/10.5281/zenodo.19684922  
+**Published dataset DOI:** https://doi.org/10.5281/zenodo.19684922
 **License:** CC BY-NC 4.0
+
+### Conceptual dataset (published on Zenodo)
+
+| Metric | Count |
+|---|---|
+| Entity records | 81 |
+| Entity types | 6 (City, Route, Good, Event, Person, Inscription) |
+| Typed relationship records | 50 |
+| Century-level temporal annotations | 45 |
+| Temporal coverage | 300 BCE – 1500 CE |
+
+### Operational database (after seeding)
+
+| Table | Count |
+|---|---|
+| `entity` | 77 |
+| `route_segment` | 14 |
+| `entity_relation` | 113 |
+| `century_note` | 90 |
+
+The difference between conceptual and operational counts reflects implementation-level entity merging and derived relationship associations generated during seeding from embedded fields such as `relatedEntities` and `connectedRoutes`.
 
 ### Dataset Pipeline
 
 ```
-Curated Silk Roads Dataset (Excel)
+Curated Silk Roads Dataset (Excel, published on Zenodo)
         |
         v
 Shared JSON Dataset
@@ -116,10 +87,33 @@ data/silk-road-data.json
                     |
                     v
               Relational Database
-              SQLite / MySQL
+              SQLite (development) / MySQL (production)
 ```
 
-This structure prevents frontend/backend data divergence and ensures that both the interface and database are derived from the same curated source.
+This pipeline prevents frontend/backend data divergence and ensures both layers are derived from the same curated source.
+
+---
+
+## Features
+
+- Interactive Mapbox GL JS map with Silk Roads cities and route polylines
+- Zoom-triggered 3D architectural city markers with progressive disclosure
+- Century-based timeline slider spanning 300 BCE to 1500 CE with play, pause, step, and speed controls
+- D3.js semantic relationship graph with six layout modes and 300-tick pre-settling
+- Single-response dual-update: one API call updates both map markers and graph nodes simultaneously
+- Contextual entity panels as inline overlays with related entity navigation
+- Full entity detail pages with four tabs: Overview, Relationships, Timeline, Sources
+- Traveller Journey mode for five historical figures: Marco Polo, Ibn Battuta, Xuanzang, Zhang Qian, and Zheng He — with gamification completion modal
+- Global search overlay accessible from all views
+- Dark and light theme toggle
+- Architecture page exposing dataset metadata, data model, and technology stack within the running application
+- Flask REST API with temporal overlap predicate for accurate century-window filtering
+- SQLAlchemy ORM with partial denormalisation strategy for read-dominant performance
+- Dual API client with static JSON fallback
+- Docker Compose orchestration with Nginx HTTPS reverse proxy
+- GitHub Actions CI/CD pipeline: pytest → Docker build → GHCR image publish
+- Content Security Policy headers via Next.js middleware
+- XSS, SQL injection, and path traversal blocking at request level
 
 ---
 
@@ -127,107 +121,94 @@ This structure prevents frontend/backend data divergence and ensures that both t
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| Frontend | Next.js 15 + React | App Router, React components, page routing, frontend architecture |
-| Language | TypeScript | Type safety and structured frontend development |
-| Styling | Tailwind CSS + shadcn/ui | Responsive interface and reusable UI components |
+| Frontend | Next.js 15 + React | App Router, page routing, shared state management |
+| Language | TypeScript | Type safety across shared data structures |
+| Styling | Tailwind CSS + shadcn/ui | Responsive interface and accessible components |
 | Map | Mapbox GL JS | Spatial visualisation and interactive map rendering |
-| Graph | D3.js | Semantic relationship graph visualisation |
-| Backend | Flask | REST API layer |
-| ORM | SQLAlchemy | Database abstraction and safer queries |
-| Database | SQLite / MySQL | Local and production-style persistence |
-| Deployment | Docker Compose | Multi-service container orchestration |
-| Proxy | Nginx | Reverse proxy and routing |
+| Graph | D3.js | Force-directed semantic relationship graph |
+| Backend | Python Flask | REST API with blueprint registration |
+| ORM | SQLAlchemy | Database abstraction, parameterised queries, NFR9 |
+| Database | SQLite / MySQL 8.0 | Local development and production-style deployment |
+| Deployment | Docker Compose | Four-service container orchestration |
+| Proxy | Nginx | HTTPS termination and reverse proxy routing |
+| CI/CD | GitHub Actions | Automated test, build, and image publish pipeline |
+| SAST | SonarQube Cloud | Static analysis — Security Rating A, zero open issues |
+| Formatting | Black + Pylint | Deterministic formatting and code quality (9.86/10) |
 
 ---
 
 ## Project Structure
 
 ```
-CSC3094-silk-road-nexus-230266960/
+CSC3094-silk-roads-nexus-230266960/
 ├── app/                            # Next.js App Router pages
 │   ├── page.tsx                    # Landing page
 │   ├── layout.tsx                  # Root layout and metadata
-│   ├── explore/                    # Coordinated exploration interface
-│   ├── graph/                      # Semantic graph page
-│   ├── traveller/                  # Traveller mode pages
+│   ├── explore/                    # Coordinated spatial + temporal view
+│   ├── graph/                      # Semantic graph view
+│   ├── traveller/                  # Traveller journey mode
 │   ├── entity/[id]/                # Entity detail pages
-│   └── architecture/               # Architecture documentation page
+│   └── architecture/               # Live architecture documentation page
 │
-├── backend/                        # Flask API backend
-│   ├── app.py                      # Flask app factory and blueprint registration
-│   ├── config.py                   # Database configuration
+├── backend/                        # Flask REST API
+│   ├── app.py                      # Flask factory and blueprint registration
+│   ├── config.py                   # Database configuration (DATABASE_URL)
 │   ├── models.py                   # SQLAlchemy ORM models
 │   ├── seed.py                     # Seeds database from shared JSON dataset
 │   ├── requirements.txt            # Python dependencies
 │   ├── Dockerfile                  # Backend Docker image
 │   ├── silk_road.db                # Local SQLite development database
 │   ├── routes/
-│   │   ├── entities.py             # Entity API routes
+│   │   ├── entities.py             # Entity API routes with temporal overlap predicate
 │   │   ├── routes.py               # Trade-route API routes
-│   │   └── search.py               # Search API routes
+│   │   └── search.py               # Case-insensitive entity search
 │   └── tests/
-│       └── test_api.py             # Backend API tests
+│       └── test_api.py             # Backend API tests (5 passing)
 │
 ├── components/
 │   ├── explore/
-│   │   ├── silk-road-map.tsx       # Mapbox map and route rendering
-│   │   ├── city-3d-marker.tsx      # Custom 3D city markers
-│   │   ├── entity-panel.tsx        # Selected entity panel
-│   │   └── filter-panel.tsx        # Timeline/type filters
+│   │   ├── silk-road-map.tsx       # Mapbox map, route polylines, 3D markers
+│   │   ├── city-3d-marker.tsx      # Zoom-triggered 3D architectural markers
+│   │   ├── entity-panel.tsx        # Contextual entity overlay panel
+│   │   └── filter-panel.tsx        # Timeline slider and type filter toggles
 │   ├── graph/
-│   │   └── relationship-graph.tsx  # D3 relationship graph
+│   │   └── relationship-graph.tsx  # D3.js force-directed graph, six layout modes
 │   ├── ui/                         # shadcn/ui components
-│   ├── search-command.tsx          # Search command component
-│   ├── theme-provider.tsx          # Theme provider
-│   └── top-nav.tsx                 # Main navigation
+│   ├── search-command.tsx          # Global search overlay
+│   ├── theme-provider.tsx          # Dark/light theme provider
+│   └── top-nav.tsx                 # Persistent global navigation bar
 │
 ├── data/
-│   └── silk-road-data.json         # Shared operational dataset source
+│   └── silk-road-data.json         # Shared operational dataset (single source of truth)
 │
 ├── lib/
 │   ├── silk-road-data.ts           # TypeScript access layer for shared dataset
-│   ├── api-client.ts               # Frontend API client
-│   ├── city-architectures.ts       # 3D marker definitions
-│   ├── city-historical-events.ts   # City timeline/event data
-│   ├── city-images.ts              # Image references
-│   ├── firewall.ts                 # Firewall/security helper logic
-│   ├── security.ts                 # Input/security utilities
-│   ├── traveller-data.ts           # Traveller route data
+│   ├── api-client.ts               # Dual-mode API client with static fallback
+│   ├── city-architectures.ts       # 3D marker definitions per city
+│   ├── city-historical-events.ts   # City timeline annotation data
+│   ├── city-images.ts              # Wikimedia Commons image references
+│   ├── firewall.ts                 # XSS, SQL injection, path traversal blocking
+│   ├── security.ts                 # Input sanitisation utilities
+│   ├── traveller-data.ts           # Traveller journey route data
 │   └── utils.ts                    # Shared utility functions
 │
-├── public/
-│   └── images/                     # Static images and traveller portraits
-│
-├── scripts/
-│   └── export-dataset-to-json.ts   # Dataset export/transformation script
-│
 ├── nginx/
-│   └── default.conf                # Nginx reverse proxy configuration
-│
-├── styles/
-│   └── globals.css                 # Global styling
+│   └── default.conf                # HTTPS termination and proxy routing
 │
 ├── certificates/
-│   ├── localhost.pem               # Local HTTPS certificate
-│   └── localhost-key.pem           # Local HTTPS key
+│   ├── localhost.pem               # mkcert local HTTPS certificate
+│   └── localhost-key.pem           # mkcert local HTTPS key
 │
-├── docker-compose.yml              # Frontend, backend, MySQL, Nginx services
+├── .github/workflows/
+│   └── ci-cd.yml                   # GitHub Actions: pytest → Docker build → GHCR publish
+│
+├── docker-compose.yml              # Nginx, Next.js, Flask, MySQL 8.0 services
 ├── Dockerfile.frontend             # Frontend Docker image
-├── middleware.ts                   # Next.js middleware/security headers
+├── middleware.ts                   # CSP headers, X-Frame-Options, security directives
 ├── next.config.mjs                 # Next.js configuration
-├── package.json                    # Frontend dependencies and scripts
-├── package-lock.json               # npm lock file
-├── pnpm-lock.yaml                  # pnpm lock file
-├── postcss.config.mjs              # PostCSS configuration
+├── package.json                    # Frontend dependencies
 ├── tailwind.config.ts              # Tailwind configuration
 ├── tsconfig.json                   # TypeScript configuration
-├── components.json                 # shadcn/ui configuration
-├── DATABASE_SETUP.md               # Database setup notes
-├── FIREWALL_RULES.md               # Firewall/security notes
-├── .env                            # Environment variables
-├── .env.local                      # Local environment variables
-├── .gitignore
-├── .dockerignore
 └── README.md
 ```
 
@@ -235,117 +216,41 @@ CSC3094-silk-road-nexus-230266960/
 
 ## Three-Tier Architecture
 
-The system follows a three-tier client-server architecture:
-
 ```
 User Browser
     |
     v
-Nginx Reverse Proxy
+Nginx (HTTPS termination, HTTP → HTTPS redirect)
     |
-    +---> Next.js Frontend
+    +---> Next.js Frontend (port 3000)
+    |     Shared state, Mapbox GL JS, D3.js
     |
-    +---> Flask Backend API
+    +---> Flask Backend API (port 5000)
                 |
                 v
-        SQLite / MySQL Database
+        SQLite (development) / MySQL 8.0 (production)
 ```
 
-The frontend handles visual interaction and coordinated views. The backend exposes API endpoints and manages database access. The database stores the operational dataset used by the platform.
+The single-response dual-update mechanism is the architectural centrepiece: one `GET /api/entities?century_year={n}` call updates both the Mapbox map markers and the D3.js graph nodes within the same render cycle, directly realising cross-view synchronisation (FR16).
 
 ---
 
 ## API Endpoints
 
-The Flask backend provides API routes for the frontend:
+| Endpoint | Description |
+|---|---|
+| `GET /api/entities` | All entities, optional `?century_year=` temporal filter |
+| `GET /api/entities/<id>` | Single entity with relationships |
+| `GET /api/routes` | All routes for Mapbox polyline rendering |
+| `GET /api/search?q=<query>` | Case-insensitive entity search by name, type, region |
 
-```
-GET /api/entities
-GET /api/entities/<id>
-GET /api/routes
-GET /api/search?q=<query>
-```
-
-The frontend can use the backend API when available, while the shared dataset also supports frontend rendering during development.
+The temporal filter uses a window overlap predicate (`start_year ≤ windowEnd AND end_year ≥ windowStart`) to correctly return entities active across multi-century periods.
 
 ---
 
 ## Database Setup
 
-The backend supports both SQLite and MySQL through SQLAlchemy.
-
 ### Local SQLite
-
-SQLite is used for lightweight local development.
-
-```bash
-cd backend
-python seed.py
-python app.py
-```
-
-### Docker MySQL
-
-The production-style setup uses MySQL 8.0 through Docker Compose.
-
-```bash
-docker compose up --build
-```
-
-Seed the database inside the backend container if needed:
-
-```bash
-docker exec -it silkroad_backend sh
-cd backend
-python seed.py
-```
-
-The MySQL database can be inspected through MySQL Workbench using:
-
-```sql
-USE silkroad_db;
-SELECT COUNT(*) FROM entity;
-SELECT type, COUNT(*) FROM entity GROUP BY type;
-SELECT COUNT(*) FROM entity_relation;
-SELECT COUNT(*) FROM route_segment;
-SELECT COUNT(*) FROM century_note;
-```
-
-Expected operational results after seeding:
-
-```
-entity:           77
-route_segment:    14
-entity_relation:  113
-century_note:     90
-```
-
-The seeding script also prints:
-
-```
-Seed complete.
-Entities seeded: 77
-Route segments seeded: 14
-Relationships processed: 50
-Century notes processed: 45
-```
-
-The difference between processed source relationships and stored relationship rows is caused by implementation-level derived associations from embedded fields such as `relatedEntities`.
-
----
-
-## Running the Project
-
-### Frontend Development
-
-```bash
-npm install
-npm run dev
-```
-
-Open: `http://localhost:3000`
-
-### Backend Development
 
 ```bash
 cd backend
@@ -354,33 +259,66 @@ python seed.py
 python app.py
 ```
 
-Backend API: `http://localhost:5000/api/entities`
-
-### Full Docker Stack
+### Docker MySQL (production-style)
 
 ```bash
 docker compose up --build
 ```
 
-Services:
+Seed the database if needed:
 
+```bash
+docker exec -it silkroad_backend sh
+cd backend
+python seed.py
 ```
-frontend:  http://localhost:3000
-backend:   http://localhost:5000
-mysql:     localhost:3306
-nginx:     http://localhost
+
+Verify seeding with MySQL Workbench:
+
+```sql
+USE silkroad_db;
+SELECT COUNT(*) FROM entity;           -- 77
+SELECT COUNT(*) FROM entity_relation;  -- 113
+SELECT COUNT(*) FROM century_note;     -- 90
+SELECT COUNT(*) FROM route_segment;    -- 14
 ```
 
 ---
 
-## Docker Services
+## Running the Project
 
-| Service | Purpose | Port |
+### Frontend only
+
+```bash
+npm install
+npm run dev
+```
+
+Open: `http://localhost:3000`
+
+### Backend only
+
+```bash
+cd backend
+pip install -r requirements.txt
+python seed.py
+python app.py
+```
+
+API: `http://localhost:5000/api/entities`
+
+### Full Docker stack
+
+```bash
+docker compose up --build
+```
+
+| Service | URL | Port |
 |---|---|---|
-| nginx | Reverse proxy | 80 / 443 |
-| frontend | Next.js frontend | 3000 |
-| backend | Flask API | 5000 |
-| mysql | MySQL 8.0 database | 3306 |
+| Nginx | https://localhost | 80 / 443 |
+| Frontend | http://localhost:3000 | 3000 |
+| Backend | http://localhost:5000 | 5000 |
+| MySQL | localhost | 3306 |
 
 ---
 
@@ -388,84 +326,78 @@ nginx:     http://localhost
 
 | Variable | Required | Description |
 |---|---|---|
-| `NEXT_PUBLIC_MAPBOX_TOKEN` | Yes | Public Mapbox token for map rendering |
-| `NEXT_PUBLIC_API_URL` | Yes/Recommended | Backend API URL |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Yes | Mapbox public token for map rendering |
+| `NEXT_PUBLIC_API_URL` | Recommended | Backend API base URL |
 | `MYSQL_DATABASE` | Docker | MySQL database name |
-| `MYSQL_USER` | Docker | MySQL user |
+| `MYSQL_USER` | Docker | MySQL username |
 | `MYSQL_PASSWORD` | Docker | MySQL password |
 | `MYSQL_ROOT_PASSWORD` | Docker | MySQL root password |
-| `DATABASE_URL` | Backend | SQLAlchemy database connection string |
+| `DATABASE_URL` | Backend | SQLAlchemy connection string (MySQL or SQLite) |
 
-Sensitive values should not be committed to version control.
+Sensitive values are managed via `.env` files excluded from version control via `.gitignore`.
 
 ---
 
-## Security and DevSecOps Measures
+## Security
 
-The project includes several security-focused implementation decisions:
-
-- SQLAlchemy ORM used for all database queries
-- Environment variables used for database credentials and API keys
-- `.env` and `.env.local` excluded from version control
-- Nginx reverse proxy separates public routing from internal services
-- Docker Compose isolates frontend, backend, and database services
-- Input/security helper utilities included in `lib/security.ts`
-- Middleware support for request-level security handling
+| Measure | Implementation |
+|---|---|
+| SQL injection prevention | SQLAlchemy ORM parameterisation |
+| XSS and path traversal blocking | `lib/firewall.ts` at request level |
+| HTTPS enforcement | Nginx with mkcert self-signed certificate |
+| Content Security Policy | `middleware.ts` — `default-src 'self'`, `frame-ancestors 'none'` |
+| Credential management | Environment variables, excluded from version control |
+| SAST | SonarQube Cloud — Security Rating A, zero open issues |
 
 ---
 
 ## Testing
 
-Backend tests are stored in:
-
-```
-backend/tests/test_api.py
-```
-
-Run backend tests from the project root or backend environment:
+### Backend tests
 
 ```bash
 pytest backend/tests
 ```
 
-Frontend quality checks can be run with:
+5 tests covering entity, route, and search endpoints — all passing.
+
+### Functional tests
+
+37 manual test cases covering all functional and non-functional requirements — all passing.
+
+### Code quality
 
 ```bash
-npm run lint
-npm run typecheck
+cd backend
+black .        # deterministic formatting
+pylint .       # score: 9.86/10
 ```
-
-Available scripts depend on the final `package.json` configuration.
 
 ---
 
 ## Dataset Citation
 
-If using the dataset, cite:
-
 ```bibtex
 @dataset{alnajem2026silkroads,
-  title     = {The Silk Road Nexus Dataset: Curated Entity and Route Data for Integrated Spatial, Temporal, and Semantic Analysis},
-  author    = {Alnajem, Saud Najem S.},
-  year      = {2026},
+  title        = {The Silk Roads Nexus: Curated Micro-Dataset of Cultural Heritage Entities, Relationships, and Historical Annotations},
+  author       = {Alnajem, Saud Najem S.},
+  year         = {2026},
   organization = {Newcastle University},
-  doi       = {10.5281/zenodo.19684922},
-  url       = {https://doi.org/10.5281/zenodo.19684922},
-  license   = {CC BY-NC 4.0}
+  doi          = {10.5281/zenodo.19684922},
+  url          = {https://doi.org/10.5281/zenodo.19684922},
+  license      = {CC BY-NC 4.0}
 }
 ```
-
----
 
 ## Platform Citation
 
 ```bibtex
 @software{alnajem2026silkroadnexus,
-  title     = {The Silk Road Nexus: A Coordinated Multi-View Platform for Integrated Spatial, Temporal, and Semantic Exploration of Silk Roads Cultural Heritage},
-  author    = {Alnajem, Saud Najem S.},
-  year      = {2026},
+  title        = {The Silk Roads Nexus: A Coordinated Multi-View Platform for Integrated Spatial, Temporal, and Semantic Exploration of Silk Roads Cultural Heritage},
+  author       = {Alnajem, Saud Najem S.},
+  year         = {2026},
   organization = {Newcastle University},
-  url       = {https://github.com/saudNA9/CSC3094-silk-road-nexus}
+  url          = {https://github.com/saudNA9/CSC3094-silk-roads-nexus}
 }
 ```
 
@@ -473,9 +405,7 @@ If using the dataset, cite:
 
 ## License and Attribution
 
-Code developed as part of CSC3094 at Newcastle University, 2025–2026.  
+Code developed as part of CSC3094 Major Project Dissertation at Newcastle University, 2025–2026.
 Dataset license: CC BY-NC 4.0.
-
----
 
 *Built by Saud Najem S. Alnajem, 2026.*
