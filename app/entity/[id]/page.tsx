@@ -110,7 +110,7 @@ export default function EntityPage({
           </Button>
         </Link>
 
-        {/* ENTITY HEADER CARD - At the top matching the GUI design */}
+        {/* ENTITY HEADER CARD */}
         <div className="ornamental-border mb-8 rounded-xl border border-border bg-card p-6">
           {/* Title and Type */}
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -198,13 +198,12 @@ export default function EntityPage({
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              {/* Travel With button for famous explorers */}
               {entity.type === "Person" && TRAVELLERS.some(t => t.id === entity.id) && (
                 <Link href={`/traveller/${entity.id}`} className="flex-1 min-w-[140px]">
                   <Button variant="default" className="w-full justify-between bg-accent text-accent-foreground hover:bg-accent/90">
                     <span className="flex items-center gap-2">
                       <Route className="h-4 w-4" />
-                      Travel With {entity.name.split(" ")[0]}
+                      Travel With {(entity.name ?? '').split(" ")[0]}
                     </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -214,7 +213,7 @@ export default function EntityPage({
           </div>
         </div>
 
-        {/* Hero Image for Cities - Full Width */}
+        {/* Hero Image for Cities */}
         {cityImage && (
           <div className="mb-8 relative aspect-[20/9] overflow-hidden rounded-xl border border-border">
             <Image
@@ -231,11 +230,10 @@ export default function EntityPage({
           </div>
         )}
 
-        {/* Two Column Layout - Content Left, Related Info Right */}
+        {/* Two Column Layout */}
         <div className="grid gap-8 lg:grid-cols-[1fr,320px]">
-          {/* LEFT COLUMN - Main Content */}
+          {/* LEFT COLUMN */}
           <div className="space-y-6">
-            {/* Tabs */}
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="mb-6 w-full justify-start">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -246,7 +244,6 @@ export default function EntityPage({
 
               {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-6">
-                {/* Show description if no other overview content exists */}
                 {!entity.tradeSignificance && !entity.connectedRoutes?.length && !entity.relatedGoods?.length && !entity.facts && !entity.notableFigures?.length && !entity.relatedEvents?.length && (
                   <div className="rounded-xl border border-border bg-card p-6">
                     <p className="text-sm leading-relaxed text-muted-foreground">
@@ -254,8 +251,7 @@ export default function EntityPage({
                     </p>
                   </div>
                 )}
-                
-                {/* Trade Significance */}
+
                 {entity.tradeSignificance && (
                   <div>
                     <h3 className="heritage-divider mb-3">
@@ -271,9 +267,7 @@ export default function EntityPage({
                   </div>
                 )}
 
-                {/* Two column grid for routes and goods */}
                 <div className="grid gap-6 sm:grid-cols-2">
-                  {/* Connected Routes */}
                   {entity.connectedRoutes && entity.connectedRoutes.length > 0 && (
                     <div>
                       <h3 className="heritage-divider mb-3">
@@ -292,7 +286,6 @@ export default function EntityPage({
                     </div>
                   )}
 
-                  {/* Traded Goods */}
                   {entity.relatedGoods && entity.relatedGoods.length > 0 && (
                     <div>
                       <h3 className="heritage-divider mb-3">
@@ -312,7 +305,6 @@ export default function EntityPage({
                   )}
                 </div>
 
-                {/* Key Facts */}
                 {entity.facts && (
                   <div>
                     <h3 className="heritage-divider mb-3">
@@ -336,7 +328,6 @@ export default function EntityPage({
                   </div>
                 )}
 
-                {/* Notable Figures */}
                 {entity.notableFigures && entity.notableFigures.length > 0 && (
                   <div>
                     <h3 className="heritage-divider mb-3">
@@ -359,7 +350,6 @@ export default function EntityPage({
                   </div>
                 )}
 
-                {/* Related Events */}
                 {entity.relatedEvents && entity.relatedEvents.length > 0 && (
                   <div>
                     <h3 className="heritage-divider mb-3">
@@ -387,7 +377,6 @@ export default function EntityPage({
                         Connected Entities ({relatedEntities.length})
                       </h3>
                     </div>
-
                     <div className="grid gap-3 sm:grid-cols-2">
                       {relatedEntities.map((rel) => (
                         <Link
@@ -493,12 +482,12 @@ export default function EntityPage({
                 )}
               </TabsContent>
 
-              {/* Sources Tab */}
+              {/* Sources Tab — FIXED: entity.source may be undefined */}
               <TabsContent value="sources" className="space-y-4">
                 <div className="rounded-xl border border-border bg-card p-6">
                   <h3 className="mb-4 text-lg font-semibold text-foreground">Primary Sources</h3>
                   <div className="space-y-3">
-                    {entity.source.split(';').map((src, idx) => (
+                    {(entity.source ?? '').split(';').filter(Boolean).map((src, idx) => (
                       <div key={idx} className="flex items-start gap-3 rounded-lg border border-border/50 bg-muted/30 p-3">
                         <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent">
                           {idx + 1}
@@ -519,15 +508,20 @@ export default function EntityPage({
                         </div>
                       </div>
                     ))}
+                    {!entity.source && (
+                      <p className="text-sm text-muted-foreground">
+                        Source information is available in the published dataset.
+                      </p>
+                    )}
                   </div>
-                  
+
                   {/* Dataset Attribution */}
                   <div className="mt-6 space-y-4">
                     <div className="rounded-lg border border-accent/20 bg-accent/5 p-4">
                       <h4 className="text-sm font-medium text-accent">Dataset Information</h4>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        This entity is part of the <strong>Silk Roads Nexus Curated Dataset v1.0</strong>, 
-                        compiled by <strong>Saud Najem S. Alnajem</strong> (Student ID: 230266960) for the 
+                        This entity is part of the <strong>Silk Roads Nexus Curated Dataset v1.0</strong>,
+                        compiled by <strong>Saud Najem S. Alnajem</strong> (Student ID: 230266960) for the
                         CSC3094 Final Year Dissertation at Newcastle University.
                       </p>
                       <p className="mt-2 text-xs text-muted-foreground">
@@ -538,9 +532,9 @@ export default function EntityPage({
                     <div className="rounded-lg border border-border bg-muted/30 p-4">
                       <h4 className="text-sm font-medium text-foreground">Data Verification Declaration</h4>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        All data in this dataset has been manually curated and cross-referenced against 
-                        peer-reviewed academic publications, archaeological reports, and authoritative 
-                        historical databases. Geographic coordinates have been verified against the 
+                        All data in this dataset has been manually curated and cross-referenced against
+                        peer-reviewed academic publications, archaeological reports, and authoritative
+                        historical databases. Geographic coordinates have been verified against the
                         Pleiades gazetteer of ancient places where applicable.
                       </p>
                     </div>
@@ -549,9 +543,9 @@ export default function EntityPage({
                       <ExternalLink className="h-4 w-4 text-accent" />
                       <div className="flex-1">
                         <p className="text-xs font-medium text-foreground">Dataset DOI</p>
-                        <a 
-                          href="https://doi.org/10.5281/zenodo.19684922" 
-                          target="_blank" 
+                        <a
+                          href="https://doi.org/10.5281/zenodo.19684922"
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-accent hover:underline"
                         >
@@ -569,9 +563,8 @@ export default function EntityPage({
             </Tabs>
           </div>
 
-          {/* RIGHT COLUMN - Related Entities Sidebar */}
+          {/* RIGHT COLUMN */}
           <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-            {/* Related Entities Card */}
             {relatedEntities.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
@@ -598,7 +591,6 @@ export default function EntityPage({
               </div>
             )}
 
-            {/* Traded Goods Card */}
             {entity.relatedGoods && entity.relatedGoods.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
@@ -615,7 +607,6 @@ export default function EntityPage({
               </div>
             )}
 
-            {/* Quick Stats */}
             {entity.facts && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
