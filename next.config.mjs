@@ -4,24 +4,28 @@
  * It will:
  * - Enable standalone output mode so the Docker image needs no extra node_modules folder
  * - Apply HTTP security headers (CSP, HSTS, X-Frame-Options, etc.) to every response
- * - Suppress TypeScript and ESLint build errors so CI does not block on warnings
+ * - Suppress TypeScript build errors so CI does not block on warnings
+ * - Serve images directly without Next.js image optimization
  */
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Produces a self-contained .next/standalone folder — required for the Dockerfile.frontend
+  // Produces a self-contained .next/standalone folder
+  // Required for the Dockerfile.frontend
   output: 'standalone',
 
   typescript: {
     ignoreBuildErrors: true,
   },
 
-  // ✅ Allow external images
+  // Disable Next.js image optimization.
+  // This serves local images directly from /public instead of through /_next/image.
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+        protocol: 'https',
+        hostname: 'hebbkx1anhila5yf.public.blob.vercel-storage.com',
       },
     ],
   },
@@ -51,7 +55,8 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(self), interest-cohort=()',
+            value:
+              'camera=(), microphone=(), geolocation=(self), interest-cohort=()',
           },
           {
             key: 'Strict-Transport-Security',
