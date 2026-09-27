@@ -1,6 +1,6 @@
 /*
  * middleware.ts
- * Edge middleware that runs before every matched request.
+ * Middleware that runs before every matched request.
  * It will:
  * - Detect potential security attacks (SQL injection, XSS, path traversal)
  * - Attach a unique request ID to each response for tracing and audit logs
@@ -12,6 +12,10 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { scanRequest } from '@/lib/firewall'
+
+// Vercel Services does not support Edge Runtime output.
+// Explicitly run this middleware using the Node.js runtime.
+export const runtime = 'nodejs'
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
@@ -32,6 +36,7 @@ export function middleware(request: NextRequest) {
 
     // Redirect to attack detection page with encoded attack info
     const attackEncoded = encodeURIComponent(detection.type || 'unknown')
+
     return NextResponse.redirect(
       new URL(`/attack-detected?attack=${attackEncoded}`, request.url)
     )
@@ -48,7 +53,10 @@ export function middleware(request: NextRequest) {
 
   // Force no-cache on API routes so sensitive data is never served from cache
   if (pathname.startsWith('/api/')) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    )
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')
   }
@@ -58,5 +66,8 @@ export function middleware(request: NextRequest) {
 
 // Only run middleware on page and API routes — skip static files and images
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)', '/api/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|images/).*)',
+    '/api/:path*',
+  ],
 }
